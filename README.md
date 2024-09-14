@@ -1,1 +1,5 @@
-# home-lab
+# HomeLab
+
+## Documentation
+
+La documentation est disponible dans Obsidian.

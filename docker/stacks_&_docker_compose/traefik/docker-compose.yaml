@@ -1,0 +1,28 @@
+
+services:
+  traefik:
+    # The official v3 Traefik docker image
+    image: traefik:v3.1
+    container_name: traefik
+    # Enables the web UI and tells Traefik to listen to docker
+    ports:
+      # The HTTP port
+      - 80:80
+      - 443:443
+      # The Web UI (enabled by --api.insecure=true)
+      - 8080:8080
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - /docker/traefik/conf/:/etc/traefik/conf/
+      - /docker/traefik/certs/:/etc/traefik/certs/
+    restart: unless-stopped
+    networks:
+      - front-end
+    env_file:
+      - stack.env
+
+networks:
+  front-end:
+    external: true
