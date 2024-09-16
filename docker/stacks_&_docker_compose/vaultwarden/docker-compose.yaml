@@ -1,0 +1,31 @@
+---
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+  # # Activate to debug
+  # ports:
+  #   - 8080:80
+    volumes:
+      - /docker/vaultwarden/data:/data
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+    restart: unless-stopped
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden-http.entrypoints=web"
+      - "traefik.http.routers.vaultwarden-http.rule=Host(`vaultwarden.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.vaultwarden-https.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden-https.rule=Host(`vaultwarden.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.vaultwarden-https.tls=true"
+      - "traefik.http.routers.vaultwarden-https.tls.certresolver=production"
+      - "traefik.http.routers.vaultwarden-https.service=vaultwarden-svc"
+      - "traefik.http.services.vaultwarden-svc.loadBalancer.server.port=80"
+
+networks:
+  front-end:
+    external: true

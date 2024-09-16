@@ -1,0 +1,33 @@
+---
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    # # Activate to debug
+    # ports:
+    #   - 3000:3000
+    volumes:
+      - /docker/homepage/config:/app/config # Make sure your local config directory exists
+      - /docker/homepage/icons:/app/public/icons
+      - /docker/homepage/images:/app/public/images
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+    restart: unless-stopped
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage-http.entrypoints=web"
+      - "traefik.http.routers.homepage-http.rule=Host(`dash.abeaudoin.xyz`)"
+      - "traefik.http.routers.homepage-https.entrypoints=websecure"
+      - "traefik.http.routers.homepage-https.rule=Host(`dash.abeaudoin.xyz`)"
+      - "traefik.http.routers.homepage-https.tls=true"
+      - "traefik.http.routers.homepage-https.tls.certresolver=production"
+      - "traefik.http.routers.homepage-https.service=homepage-svc"
+      - "traefik.http.services.homepage-svc.loadBalancer.server.port=3000"
+
+networks:
+  front-end:
+    external: true
