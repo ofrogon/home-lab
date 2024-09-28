@@ -16,13 +16,13 @@ format = '[$symbol](bold white) '
 disabled = false
 
 [os.symbols]
-Windows = ' '
-Arch = '󰣇'
-Ubuntu = ''
-Macos = '󰀵'
-Android = ''
-Debian = ''
-Mint = '󰣭'
+Windows = '[](bold blue)'
+Arch = '[󰣇](bold blue)'
+Ubuntu = '[](bold orange)'
+Macos = '[󰀵](bold white)'
+Android = '[](bold green)'
+Debian = '[](bold yellow)'
+Mint = '[󰣭](bold green)'
 
 # ---y
 
