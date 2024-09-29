@@ -17,8 +17,8 @@ disabled = false
 
 [os.symbols]
 Windows = '[](bold blue)'
-Arch = '[󰣇](bold blue)'
-Ubuntu = '[](bold orange)'
+Arch = '[󰣇](bold cyan)'
+Ubuntu = '[](bold brightRed)'
 Macos = '[󰀵](bold white)'
 Android = '[](bold green)'
 Debian = '[](bold yellow)'
