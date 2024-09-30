@@ -1,0 +1,29 @@
+---
+
+services:
+  excalidraw:
+    image: excalidraw/excalidraw
+    container_name: excalidraw
+    restart: unless-stopped
+    user: $PUID:$PGID
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.excalidraw-http.entrypoints=web"
+      - "traefik.http.routers.excalidraw-http.rule=Host(`draw.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.excalidraw-https.entrypoints=websecure"
+      - "traefik.http.routers.excalidraw-https.rule=Host(`draw.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.excalidraw-https.tls=true"
+      - "traefik.http.routers.excalidraw-https.tls.certresolver=production"
+      - "traefik.http.routers.excalidraw-https.service=excalidraw-svc"
+      - "traefik.http.services.excalidraw-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true

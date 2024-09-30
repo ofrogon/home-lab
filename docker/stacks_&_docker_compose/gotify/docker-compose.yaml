@@ -9,10 +9,10 @@ services:
     # ports:
     #  - 8080:80
     environment:
-      GOTIFY_DEFAULTUSER_PASS: $DFPASS
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
+      GOTIFY_DEFAULTUSER_PASS: $DFPASS
     volumes:
       - "/docker/gotify:/app/data"
     networks:

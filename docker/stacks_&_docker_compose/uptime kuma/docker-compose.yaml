@@ -1,0 +1,33 @@
+---
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptimekuma
+    restart: unless-stopped
+    user: $PUID:$PGID
+    # ports:
+    #  - 3001:80
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/uptimekuma:/app/data"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma-http.entrypoints=web"
+      - "traefik.http.routers.uptime-kuma-http.rule=Host(`uptime.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.uptime-kuma-https.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma-https.rule=Host(`uptime.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.uptime-kuma-https.tls=true"
+      - "traefik.http.routers.uptime-kuma-https.tls.certresolver=production"
+      - "traefik.http.routers.uptime-kuma-https.service=uptime-kuma-svc"
+      - "traefik.http.services.uptime-kuma-svc.loadBalancer.server.port=3001"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true

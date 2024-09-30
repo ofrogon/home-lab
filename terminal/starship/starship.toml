@@ -18,11 +18,11 @@ disabled = false
 [os.symbols]
 Windows = '[](bold blue)'
 Arch = '[󰣇](bold cyan)'
-Ubuntu = '[](bold brightRed)'
+Ubuntu = '[](#E95420)'
 Macos = '[󰀵](bold white)'
 Android = '[](bold green)'
 Debian = '[](bold yellow)'
-Mint = '[󰣭](bold green)'
+Mint = '[󰣭](#86BE43)'
 
 # ---y
 

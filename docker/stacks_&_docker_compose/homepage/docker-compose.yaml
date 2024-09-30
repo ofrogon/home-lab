@@ -4,17 +4,18 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
-    # # Activate to debug
+    restart: unless-stopped
+    user: $PUID:$PGID
     # ports:
-    #   - 3000:3000
-    volumes:
-      - /docker/homepage/config:/app/config # Make sure your local config directory exists
-      - /docker/homepage/icons:/app/public/icons
-      - /docker/homepage/images:/app/public/images
+    #  - 3000:3000
     environment:
+      TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-    restart: unless-stopped
+    volumes:
+      - "/docker/homepage/config:/app/config"
+      - "/docker/homepage/icons:/app/public/icons"
+      - "/docker/homepage/images:/app/public/images"
     networks:
       - front-end
     labels:
@@ -27,6 +28,7 @@ services:
       - "traefik.http.routers.homepage-https.tls.certresolver=production"
       - "traefik.http.routers.homepage-https.service=homepage-svc"
       - "traefik.http.services.homepage-svc.loadBalancer.server.port=3000"
+      - "traefik.docker.network=front-end"
 
 networks:
   front-end:

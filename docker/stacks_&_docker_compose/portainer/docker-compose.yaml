@@ -2,34 +2,39 @@
 
 services:
   portainer:
-    image: portainer/portainer-ee:2.21.1
-    container_name: portainer2
-    command: -H unix:///var/run/docker.sock
+    image: portainer/portainer-ee:alpine
+    container_name: portainer
     restart: always
+    command: -H unix:///var/run/docker.sock
+    # ports:
+    #  - 9443:9443
+    environment:
+      TZ: America/Montreal
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /docker/portainer/data:/data
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/docker/portainer/data:/data"
     networks:
       - front-end
     labels:
       # Frontend
       - "traefik.enable=true"
       - "traefik.http.routers.portainer-fe-http.entrypoints=web"
-      - "traefik.http.routers.portainer-fe-http.rule=Host(`portainer2.abeaudoin.xyz`)"
+      - "traefik.http.routers.portainer-fe-http.rule=Host(`portainer.local.abeaudoin.xyz`)"
       - "traefik.http.routers.portainer-fe-https.entrypoints=websecure"
-      - "traefik.http.routers.portainer-fe-https.rule=Host(`portainer2.abeaudoin.xyz`)"
+      - "traefik.http.routers.portainer-fe-https.rule=Host(`portainer.local.abeaudoin.xyz`)"
       - "traefik.http.routers.portainer-fe-https.tls=true"
       - "traefik.http.routers.portainer-fe-https.tls.certresolver=production"
       - "traefik.http.routers.portainer-fe-https.service=portainer-fe-svc"
       - "traefik.http.services.portainer-fe-svc.loadBalancer.server.port=9000"
+      - "traefik.docker.network=front-end"
 
       # Edge
-      - "traefik.http.routers.portainer-edge-https.entrypoints=websecure"
-      - "traefik.http.routers.portainer-edge-https.rule=Host(`edge.abeaudoin.xyz`)"
-      - "traefik.http.routers.portainer-edge-https.tls=true"
-      - "traefik.http.routers.portainer-edge-https.tls.certresolver=production"
-      - "traefik.http.routers.portainer-edge-https.service=portainer-edge-svc"
-      - "traefik.http.services.portainer-edge-svc.loadbalancer.server.port=8000"
+      #- "traefik.http.routers.portainer-edge-https.entrypoints=websecure"
+      #- "traefik.http.routers.portainer-edge-https.rule=Host(`edge.local.abeaudoin.xyz`)"
+      #- "traefik.http.routers.portainer-edge-https.tls=true"
+      #- "traefik.http.routers.portainer-edge-https.tls.certresolver=production"
+      #- "traefik.http.routers.portainer-edge-https.service=portainer-edge-svc"
+      #- "traefik.http.services.portainer-edge-svc.loadbalancer.server.port=8000"
 
 networks:
   front-end:

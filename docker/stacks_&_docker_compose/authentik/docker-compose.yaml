@@ -1,0 +1,118 @@
+---
+
+services:
+  postgresql:
+    image: docker.io/library/postgres:16-alpine
+    container_name: authentik-postgresdql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    env_file:
+      - stack.env
+    networks:
+      - back-end
+
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: authentik-redis
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - "redis:/data"
+    networks:
+      - back-end
+
+  server:
+    image: ghcr.io/goauthentik/server:2024.8
+    container_name: authentik-server
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      #Add logs
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
+    user: $PUID:$PGID
+    volumes:
+      - "/docker/authentik/media:/media"
+      - "/docker/authentik/custom-templates:/templates"
+    env_file:
+      - stack.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authentik-http.entrypoints=web"
+      - "traefik.http.routers.authentik-http.rule=Host(`auth.local.abeaudoin.xyz`)"
+      - "traefik.http.middlewares.auth-http-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.authentik-http.middlewares=auth-http-redirect"
+      - "traefik.http.routers.authentik-https.entrypoints=websecure"
+      - "traefik.http.routers.authentik-https.rule=Host(`auth.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.authentik-https.tls=true"
+      - "traefik.http.routers.authentik-https.tls.certresolver=production"
+      - "traefik.http.routers.authentik-https.service=authentik-svc"
+      - "traefik.http.services.authentik-svc.loadBalancer.server.port=9000"
+      - "traefik.docker.network=front-end"
+    depends_on:
+      - postgresql
+      - redis
+    networks:
+      - front-end
+      - back-end
+
+  worker:
+    image: ghcr.io/goauthentik/server:2024.8
+    container_name: authentik-worker
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      #Add logs
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
+      PUID: $PUID
+      PGID: $PGID
+    user: $PUID:$PGID
+    volumes:
+      - "/docker/authentik/media:/media"
+      - "/docker/authentik/certs:/certs"
+      - "/docker/authentik/custom-templates:/templates"
+    env_file:
+      - stack.env
+    depends_on:
+      - postgresql
+      - redis
+    networks:
+      - back-end
+
+volumes:
+  database:
+    driver: local
+  redis:
+    driver: local
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true

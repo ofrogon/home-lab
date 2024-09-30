@@ -3,16 +3,17 @@
 services:
   vaultwarden:
     image: vaultwarden/server:latest
+    restart: unless-stopped
+    user: $PUID:$PGID
     container_name: vaultwarden
-  # # Activate to debug
-  # ports:
-  #   - 8080:80
-    volumes:
-      - /docker/vaultwarden/data:/data
+    # ports:
+    #   - 8080:80
     environment:
+      TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-    restart: unless-stopped
+    volumes:
+      - "/docker/vaultwarden/data:/data"
     networks:
       - front-end
     labels:

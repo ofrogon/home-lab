@@ -1,0 +1,36 @@
+---
+
+services:
+  influxdb:
+    image: influxdb:2
+    container_name: influxdb
+    restart: unless-stopped
+    user: $PUID:$PGID
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/influxdb/data:/app/data"
+      - "/docker/influxdb/influxdb2-data:/var/lib/influxdb2"
+      - "/docker/influxdb/influxdb2-config:/etc/influxdb2"
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.influxdb-http.entrypoints=web"
+      - "traefik.http.routers.influxdb-http.rule=Host(`influxdb.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.influxdb-https.entrypoints=websecure"
+      - "traefik.http.routers.influxdb-https.rule=Host(`influxdb.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.influxdb-https.tls=true"
+      - "traefik.http.routers.influxdb-https.tls.certresolver=production"
+      - "traefik.http.routers.influxdb-https.service=influxdb-svc"
+      - "traefik.http.services.influxdb-svc.loadBalancer.server.port=8086"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true
