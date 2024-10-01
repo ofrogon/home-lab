@@ -4,7 +4,7 @@ services:
   vaultwarden:
     image: vaultwarden/server:latest
     restart: unless-stopped
-    user: $PUID:$PGID
+    user: "${PUID}:${PGID}"
     container_name: vaultwarden
     # ports:
     #   - 8080:80

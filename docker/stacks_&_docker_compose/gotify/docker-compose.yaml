@@ -5,7 +5,7 @@ services:
     image: gotify/server
     container_name: gotify
     restart: unless-stopped
-    user: $PUID:$PGID
+    user: "${PUID}:${PGID}"
     # ports:
     #  - 8080:80
     environment:

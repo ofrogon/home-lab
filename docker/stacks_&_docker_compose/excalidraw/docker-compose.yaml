@@ -5,7 +5,6 @@ services:
     image: excalidraw/excalidraw
     container_name: excalidraw
     restart: unless-stopped
-    user: $PUID:$PGID
     environment:
       TZ: America/Montreal
       PUID: $PUID

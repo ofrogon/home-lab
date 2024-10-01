@@ -5,7 +5,7 @@ services:
     image: influxdb:2
     container_name: influxdb
     restart: unless-stopped
-    user: $PUID:$PGID
+    user: "${PUID}:${PGID}"
     environment:
       TZ: America/Montreal
       PUID: $PUID

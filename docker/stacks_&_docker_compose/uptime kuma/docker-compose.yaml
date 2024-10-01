@@ -5,7 +5,8 @@ services:
     image: louislam/uptime-kuma:1
     container_name: uptimekuma
     restart: unless-stopped
-    user: $PUID:$PGID
+    # can't sprficy user until v2
+    # user: "${PUID}:${PGID}"
     # ports:
     #  - 3001:80
     environment:
