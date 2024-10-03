@@ -1,0 +1,34 @@
+---
+
+services:
+  metube:
+    image: ghcr.io/alexta69/metube
+    container_name: metube
+    restart: unless-stopped
+    user: "${PUID}:${PGID}"
+    # ports:
+    #   - "8081:8081"
+    environment:
+      TZ: America/Montreal
+      UID: $PUID
+      GID: $PGID
+      DELETE_FILE_ON_TRASHCAN: true
+    volumes:
+      - "/download/MeTube:/downloads"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.metube-http.entrypoints=web"
+      - "traefik.http.routers.metube-http.rule=Host(`metube.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.metube-https.entrypoints=websecure"
+      - "traefik.http.routers.metube-https.rule=Host(`metube.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.metube-https.tls=true"
+      - "traefik.http.routers.metube-https.tls.certresolver=production"
+      - "traefik.http.routers.metube-https.service=metube-svc"
+      - "traefik.http.services.metube-svc.loadBalancer.server.port=8081"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
