@@ -1,0 +1,16 @@
+---
+
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      WATCHTOWER_CLEANUP: true
+      WATCHTOWER_NOTIFICATIONS: gotify
+      WATCHTOWER_NOTIFICATION_GOTIFY_URL: $GOTIFY_URL
+      WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN: $GOTIFY_TOKEN
+      WATCHTOWER_SCHEDULE: "0 0 4 * * *"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
