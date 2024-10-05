@@ -9,13 +9,16 @@ services:
       - NET_ADMIN
     devices:
       - "/dev/net/tun:/dev/net/tun"
-    ports:
-      - 6881:6881
-      - 6881:6881/udp
-      - 8085:8085 # qbittorrent
+    # ports:
+      # - 8388:8388/tcp # Shadowsocks
+      # - 8388:8388/udp # Shadowsocks
+      # - 8085:8085 # qbittorrent
       # - 9117:9117 # Jackett
-      - 8989:8989 # Sonarr
-      - 9696:9696 # Prowlarr
+      # - 7878:7878 # Radarr
+      # - 8686:8686 # Lidarr
+      # - 8787:8787 # Readarr
+      # - 8989:8989 # Sonarr
+      # - 9696:9696 # Prowlarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       VPN_SERVICE_PROVIDER: mullvad
@@ -31,11 +34,57 @@ services:
       SERVER_COUNTRIES: $SERVER_COUNTRIES
     volumes:
       - "/docker/arr-stack/gluetun:/gluetun"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=front-end"
+
+      - "traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.qbittorrent-https.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent-https.tls.certresolver=production"
+      - "traefik.http.routers.qbittorrent-https.service=qbittorrent-svc"
+      - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085"
+
+      - "traefik.http.routers.jackett-https.rule=Host(`jackett.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.jackett-https.entrypoints=websecure"
+      - "traefik.http.routers.jackett-https.tls.certresolver=production"
+      - "traefik.http.routers.jackett-https.service=jackett-svc"
+      - "traefik.http.services.jackett-svc.loadbalancer.server.port=9117"
+
+      - "traefik.http.routers.radarr-https.rule=Host(`radarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.radarr-https.entrypoints=websecure"
+      - "traefik.http.routers.radarr-https.tls.certresolver=production"
+      - "traefik.http.routers.radarr-https.service=radarr-svc"
+      - "traefik.http.services.radarr-svc.loadbalancer.server.port=7878"
+
+      - "traefik.http.routers.lidarr-https.rule=Host(`lidarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.lidarr-https.entrypoints=websecure"
+      - "traefik.http.routers.lidarr-https.tls.certresolver=production"
+      - "traefik.http.routers.lidarr-https.service=lidarr-svc"
+      - "traefik.http.services.lidarr-svc.loadbalancer.server.port=8686"
+
+      - "traefik.http.routers.readarr-https.rule=Host(`readarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.readarr-https.entrypoints=websecure"
+      - "traefik.http.routers.readarr-https.tls.certresolver=production"
+      - "traefik.http.routers.readarr-https.service=readarr-svc"
+      - "traefik.http.services.readarr-svc.loadbalancer.server.port=8787"
+
+      - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.sonarr-https.entrypoints=websecure"
+      - "traefik.http.routers.sonarr-https.tls.certresolver=production"
+      - "traefik.http.routers.sonarr-https.service=sonarr-svc"
+      - "traefik.http.services.sonarr-svc.loadbalancer.server.port=8989"
+
+      - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.prowlarr-https.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr-https.tls.certresolver=production"
+      - "traefik.http.routers.prowlarr-https.service=prowlarr-svc"
+      - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
     container_name: qbittorrent
-    network_mode: "service:gluetun"
     restart: always
     environment:
       TZ: America/Montreal
@@ -45,29 +94,71 @@ services:
     volumes:
       - "/docker/arr-stack/qbittorrent:/config"
       - "/docker/arr-stack/qbittorrent/downloads:/downloads"
+    network_mode: "service:gluetun"
     depends_on:
       - gluetun
 
-  # jackett:
-  #   image: lscr.io/linuxserver/jackett:latest
-  #   container_name: jackett
-  #   restart: unless-stopped
-  #   network_mode: "service:gluetun"
-  #   environment:
-  #     TZ: America/Montreal
-  #     PUID: $PUID
-  #     PGID: $PGID
-  #     AUTO_UPDATE: true #optional
-  #     RUN_OPTS:  #optional
-  #   volumes:
-  #     - "/docker/arr-stack/jackett/data:/config"
-  #     - "/docker/arr-stack/jackett/blackhole:/downloads"
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      AUTO_UPDATE: true #optional
+      #RUN_OPTS:  #optional
+    volumes:
+      - "/docker/arr-stack/jackett/data:/config"
+      - "/docker/arr-stack/jackett/blackhole:/downloads"
+    network_mode: "service:gluetun"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/arr-stack/radarr/data:/config"
+      - "/docker/arr-stack/radarr/movies:/movies" #optional
+      - "/docker/arr-stack/radarr/download-client-downloads:/downloads" #optional
+    network_mode: "service:gluetun"
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/arr-stack/lidarr/data:/config"
+      - "/docker/arr-stack/lidarr/music:/music" #optional
+      - "/docker/arr-stack/lidarr/downloads:/downloads" #optional
+    network_mode: "service:gluetun"
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/arr-stack/readarr/data:/config"
+      - "/docker/arr-stack/readarr/books:/books" #optional
+      - "/docker/arr-stack/readarr/downloadclient-downloads:/downloads" #optional
+    network_mode: "service:gluetun"
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     restart: unless-stopped
-    network_mode: "service:gluetun"
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -76,15 +167,20 @@ services:
       - "/docker/arr-stack/sonarr/data:/config"
       - "/docker/arr-stack/sonarr/tvseries:/tv" #optional
       - "/docker/arr-stack/sonarr/downloadclient-downloads:/downloads" #optional
+    network_mode: "service:gluetun"
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     restart: unless-stopped
-    network_mode: "service:gluetun"
     environment:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/prowlarr/data:/config"
+    network_mode: "service:gluetun"
+
+networks:
+  front-end:
+    external: true
