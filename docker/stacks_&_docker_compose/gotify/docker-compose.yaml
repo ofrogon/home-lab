@@ -1,9 +1,5 @@
 ---
 
-secrets:
-  gotify_defaultuser_password:
-    file: /secrets/gotify_defaultuser_password.txt
-
 services:
   gotify:
     image: gotify/server
@@ -12,13 +8,11 @@ services:
     user: "${PUID}:${PGID}"
     # ports:
     #  - 8080:80
-    secrets:
-      - gotify_defaultuser_password
     environment:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-      GOTIFY_DEFAULTUSER_PASS: /run/secrets/gotify_defaultuser_password
+      GOTIFY_DEFAULTUSER_PASS: $DFPASS
     volumes:
       - "/docker/gotify:/app/data"
     networks:

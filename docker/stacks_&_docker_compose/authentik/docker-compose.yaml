@@ -1,13 +1,5 @@
 ---
 
-secrets:
-  email_password:
-    file: /secrets/email_password.txt
-  authentik_secret_key:
-    file: /secrets/authentik_secret_key.txt
-  authentik_pg_pass:
-    file: /secrets/authentik_pg_pass.txt
-
 services:
   postgresql:
     image: docker.io/library/postgres:16-alpine
@@ -19,11 +11,8 @@ services:
       interval: 30s
       retries: 5
       timeout: 5s
-    secrets:
-      - authentik_pg_pass
     environment:
-      TZ: America/Montreal
-      POSTGRES_PASSWORD: /run/secrets/authentik_pg_pass
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
       POSTGRES_USER: ${PG_USER:-authentik}
       POSTGRES_DB: ${PG_DB:-authentik}
     volumes:
@@ -54,19 +43,12 @@ services:
     container_name: authentik-server
     restart: unless-stopped
     command: server
-    secrets:
-      - authentik_pg_pass
-      - authentik_secret_key
-      - email_password
     environment:
-      TZ: America/Montreal
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: /run/secrets/authentik_pg_pass
-      AUTHENTIK_SECRET_KEY: /run/secrets/authentik_secret_key
-      AUTHENTIK_EMAIL__PASSWORD: /run/secrets/email_password
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       #Add logs
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
     user: $PUID:$PGID
@@ -100,19 +82,12 @@ services:
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
-    secrets:
-      - authentik_pg_pass
-      - authentik_secret_key
-      - email_password
     environment:
-      TZ: America/Montreal
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: /run/secrets/authentik_pg_pass
-      AUTHENTIK_SECRET_KEY: /run/secrets/authentik_secret_key
-      AUTHENTIK_EMAIL__PASSWORD: /run/secrets/email_password
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       #Add logs
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
       PUID: $PUID

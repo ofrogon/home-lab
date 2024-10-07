@@ -1,9 +1,5 @@
 ---
 
-secrets:
-  cloudflare_dns_api_token:
-    file: /secrets/cloudflare_dns_api_token.txt
-
 services:
   traefik:
     image: traefik:v3.1
@@ -14,12 +10,8 @@ services:
       - 443:443
       # The Web UI (enabled by --api.insecure=true)
       - 8080:8080
-    secrets:
-      - cloudflare_dns_api_token
     environment:
       TZ: America/Montreal
-      CLOUDFLARE_EMAIL: $CLOUDFLARE_EMAIL
-      CLOUDFLARE_DNS_API_TOKEN: /run/secrets/cloudflare_dns_api_token
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
