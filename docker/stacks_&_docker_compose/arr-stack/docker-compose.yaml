@@ -93,7 +93,7 @@ services:
       WEBUI_PORT: 8085
     volumes:
       - "/docker/arr-stack/qbittorrent:/config"
-      - "/docker/arr-stack/qbittorrent/downloads:/downloads"
+      - "/download/download:/downloads"
     network_mode: "service:gluetun"
     depends_on:
       - gluetun
@@ -110,7 +110,7 @@ services:
       #RUN_OPTS:  #optional
     volumes:
       - "/docker/arr-stack/jackett/data:/config"
-      - "/docker/arr-stack/jackett/blackhole:/downloads"
+      - "/download/download:/downloads"
     network_mode: "service:gluetun"
 
   radarr:
@@ -123,8 +123,8 @@ services:
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/radarr/data:/config"
-      - "/docker/arr-stack/radarr/movies:/movies" #optional
-      - "/docker/arr-stack/radarr/download-client-downloads:/downloads" #optional
+      - "/download/radarr/movies:/movies" #optional
+      - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
 
   lidarr:
@@ -137,8 +137,8 @@ services:
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/lidarr/data:/config"
-      - "/docker/arr-stack/lidarr/music:/music" #optional
-      - "/docker/arr-stack/lidarr/downloads:/downloads" #optional
+      - "/download/lidarr/music:/music" #optional
+      - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
 
   readarr:
@@ -151,8 +151,8 @@ services:
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/readarr/data:/config"
-      - "/docker/arr-stack/readarr/books:/books" #optional
-      - "/docker/arr-stack/readarr/downloadclient-downloads:/downloads" #optional
+      - "/download/readarr/books:/books" #optional
+      - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
 
   sonarr:
@@ -165,8 +165,8 @@ services:
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/sonarr/data:/config"
-      - "/docker/arr-stack/sonarr/tvseries:/tv" #optional
-      - "/docker/arr-stack/sonarr/downloadclient-downloads:/downloads" #optional
+      - "/download/sonarr/tvseries:/tv" #optional
+      - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
 
   prowlarr:
