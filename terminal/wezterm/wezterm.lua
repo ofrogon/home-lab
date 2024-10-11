@@ -1,4 +1,7 @@
 local wezterm = require 'wezterm'
+
+local wallpaperFolder = 'C:/Users/abeau/OneDrive/Pictures/Backgrounds/William'
+
 local launch_menu = {
   {
     label = 'PowerShell 7',
@@ -14,10 +17,11 @@ local launch_menu = {
   }
 }
 
+local dimmer = { brightness = 0.1  }
 
 local config = {
     launch_menu = launch_menu,
-    default_prog = { "C:\\Program Files\\PowerShell\\7\\pwsh.exe", '-NoLogo' },
+    default_prog = { "C:/Program Files/PowerShell/7/pwsh.exe", '-NoLogo' },
     color_scheme = 'Catppuccin Mocha',
     window_decorations = 'RESIZE',
     font = wezterm.font("JetBrainsMonoNL Nerd Font Mono", {weight="Bold", stretch="Normal", style="Normal"}),
@@ -25,17 +29,13 @@ local config = {
     use_fancy_tab_bar = false,
     tab_bar_at_bottom = true,
     -- window_background_image = 'C:\\Users\\abeau\\OneDrive\\Pictures\\Backgrounds\\(11).jpg',
-    window_background_image =  "C:/Users/abeau/OneDrive/Pictures/Backgrounds/William/GT99-KTb0AMY-_W.jpg",
-    window_background_image_hsb = {
-      -- Darken the background image by reducing it to 1/3rd
-      brightness = 0.07,
-    
-      -- You can adjust the hue by scaling its value.
-      -- a multiplier of 1.0 leaves the value unchanged.
-      hue = 1.0,
-    
-      -- You can adjust the saturation also.
-      saturation = 1.0,
+    background = {
+      {
+        source= {
+          File = "C:/Users/abeau/OneDrive/Pictures/Backgrounds/William/GT99-KTb0AMY-_W.jpg",
+        },
+        hsb = dimmer
+      }
     },
     colors = {
       tab_bar = {
