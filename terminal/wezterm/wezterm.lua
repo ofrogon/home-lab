@@ -27,7 +27,7 @@ local config = {
         stretch = "Normal",
         style = "Normal"
     }),
-    font_size = 12.5,
+    font_size = 16,
     enable_tab_bar = false,
     -- use_fancy_tab_bar = false,
     -- tab_bar_at_bottom = true,
