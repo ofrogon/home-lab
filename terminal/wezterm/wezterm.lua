@@ -61,12 +61,12 @@ local config = {
     default_prog = launch_menu[1].args,
     color_scheme = 'Catppuccin Mocha',
     window_decorations = 'RESIZE',
-    font = wezterm.font("JetBrainsMonoNL Nerd Font Mono", {
+    font = wezterm.font("JetBrainsMono Nerd Font Mono", {
         weight = "Bold",
         stretch = "Normal",
         style = "Normal"
     }),
-    font_size = 16,
+    font_size = 13,
     -- enable_tab_bar = false,
     use_fancy_tab_bar = false,
     tab_bar_at_bottom = true,
