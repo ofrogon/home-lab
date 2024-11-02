@@ -39,7 +39,7 @@ services:
       - back-end
 
   server:
-    image: ghcr.io/goauthentik/server:2024.8
+    image: ghcr.io/goauthentik/server:2024.10
     container_name: authentik-server
     restart: unless-stopped
     command: server
@@ -78,7 +78,7 @@ services:
       - back-end
 
   worker:
-    image: ghcr.io/goauthentik/server:2024.8
+    image: ghcr.io/goauthentik/server:2024.10
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
