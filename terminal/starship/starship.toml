@@ -38,7 +38,7 @@ show_always = true
 # Shows the hostname
 [hostname]
 ssh_only = true
-ssh_symbol = '󰌘'
+ssh_symbol = '󰌘 '
 format = 'on [$ssh_symbol$hostname](bold yellow) '
 disabled = false
 aliases = { "GREEN-WIN" = "Maison" }
