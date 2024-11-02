@@ -13,7 +13,7 @@ command_timeout = 1000
 # ---
 
 [os]
-format = '[$symbol](bold white) '   
+format = '[$symbol](bold white) '
 disabled = false
 
 [os.symbols]
@@ -103,4 +103,7 @@ disabled = true
 disabled = true
 
 [terraform]
+disabled = true
+
+[container]
 disabled = true
