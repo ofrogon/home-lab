@@ -1,0 +1,34 @@
+---
+
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    #user: "${PUID}:${PGID}"
+    # ports:
+    #  - "3000:8080"
+    environment:
+      TZ: America/Montreal
+      UID: $PUID
+      GID: $PGID
+      OLLAMA_BASE_URL: $OLLAMA_BASE_URL
+    volumes:
+      - "/docker/openwebui/data:/app/backend/data"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ai-http.entrypoints=web"
+      - "traefik.http.routers.ai-http.rule=Host(`ai.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ai-https.entrypoints=websecure"
+      - "traefik.http.routers.ai-https.rule=Host(`ai.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ai-https.tls=true"
+      - "traefik.http.routers.ai-https.tls.certresolver=production"
+      - "traefik.http.routers.ai-https.service=ai-svc"
+      - "traefik.http.services.ai-svc.loadBalancer.server.port=8080"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
