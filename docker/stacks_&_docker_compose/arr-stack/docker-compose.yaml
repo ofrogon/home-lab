@@ -10,6 +10,7 @@ services:
     devices:
       - "/dev/net/tun:/dev/net/tun"
     # ports:
+      # - 8000:8000/tcp # Gluetun web server
       # - 8388:8388/tcp # Shadowsocks
       # - 8388:8388/udp # Shadowsocks
       # - 8085:8085 # qbittorrent
@@ -39,6 +40,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=front-end"
+
+      - "traefik.http.routers.gluetun-https.rule=Host(`gluetun.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gluetun-https.entrypoints=websecure"
+      - "traefik.http.routers.gluetun-https.tls.certresolver=production"
+      - "traefik.http.routers.gluetun-https.service=gluetun-svc"
+      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8000"
 
       - "traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.local.abeaudoin.xyz`)"
       - "traefik.http.routers.qbittorrent-https.entrypoints=websecure"
