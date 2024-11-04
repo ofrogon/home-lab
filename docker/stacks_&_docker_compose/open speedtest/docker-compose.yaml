@@ -1,0 +1,32 @@
+---
+
+services:
+  speedtest:
+    image: openspeedtest/latest
+    container_name: open-speedtest
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      ENABLE_LETSENCRYPT: false
+      DOMAIN_NAME: false
+      USER_EMAIL: false
+    # ports:
+    #   - '3000:3000'
+    #   - '3001:3001'
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.openspeedtest-http.entrypoints=web"
+      - "traefik.http.routers.openspeedtest-http.rule=Host(`openspeedtest.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.openspeedtest-https.entrypoints=websecure"
+      - "traefik.http.routers.openspeedtest-https.rule=Host(`openspeedtest.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.openspeedtest-https.tls=true"
+      - "traefik.http.routers.openspeedtest-https.tls.certresolver=production"
+      - "traefik.http.routers.openspeedtest-https.service=openspeedtest-svc"
+      - "traefik.http.services.openspeedtest-svc.loadBalancer.server.port=3000"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
