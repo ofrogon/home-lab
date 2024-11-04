@@ -188,6 +188,52 @@ services:
       - "/docker/arr-stack/prowlarr/data:/config"
     network_mode: "service:gluetun"
 
+  # overseerr:
+  #   image: sctx/overseerr:latest
+  #   container_name: overseerr
+  #   restart: unless-stopped
+  #   environment:
+  #     TZ: America/Montreal
+  #     PUID: $PUID
+  #     PGID: $PGID
+  #     PORT: 5055
+  #   volumes:
+  #     - "/docker/arr-stack/overseerr/data:/app/config"
+  #   networks:
+  #     - front-end 
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.docker.network=front-end"
+
+  #     - "traefik.http.routers.overseerr-https.rule=Host(`overseerr.local.abeaudoin.xyz`)"
+  #     - "traefik.http.routers.overseerr-https.entrypoints=websecure"
+  #     - "traefik.http.routers.overseerr-https.tls.certresolver=production"
+  #     - "traefik.http.routers.overseerr-https.service=overseerr-svc"
+  #     - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    restart: unless-stopped
+    container_name: jellyseerr
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      PORT: 5055
+    volumes:
+      - "/docker/arr-stack/jellyseerr/data:/app/config"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=front-end"
+
+      - "traefik.http.routers.jellyseerr-https.rule=Host(`jellyseerr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.jellyseerr-https.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr-https.tls.certresolver=production"
+      - "traefik.http.routers.jellyseerr-https.service=jellyseerr-svc"
+      - "traefik.http.services.jellyseerr-svc.loadbalancer.server.port=5055"
+
 networks:
   front-end:
     external: true
