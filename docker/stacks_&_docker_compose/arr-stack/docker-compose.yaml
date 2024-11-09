@@ -15,6 +15,7 @@ services:
       # - 8388:8388/udp # Shadowsocks
       # - 8085:8085 # qbittorrent
       # - 9117:9117 # Jackett
+      # - 8191:8191 # Flaresolverr
       # - 7878:7878 # Radarr
       # - 8686:8686 # Lidarr
       # - 8787:8787 # Readarr
@@ -37,6 +38,11 @@ services:
       - "/docker/arr-stack/gluetun:/gluetun"
     networks:
       - front-end
+    healthcheck:
+      test: ping -c 1 www.google.com || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=front-end"
@@ -92,7 +98,7 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
     container_name: qbittorrent
-    restart: always
+    restart: unless-stopped
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -103,7 +109,8 @@ services:
       - "/download/download:/downloads"
     network_mode: "service:gluetun"
     depends_on:
-      - gluetun
+      gluetun:
+        condition: service_healthy
 
   jackett:
     image: lscr.io/linuxserver/jackett:latest
@@ -119,6 +126,23 @@ services:
       - "/docker/arr-stack/jackett/data:/config"
       - "/download/download:/downloads"
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    environment:
+      CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -133,6 +157,9 @@ services:
       - "/download/radarr/movies:/movies" #optional
       - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
@@ -147,6 +174,9 @@ services:
       - "/download/lidarr/music:/music" #optional
       - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   readarr:
     image: lscr.io/linuxserver/readarr:develop
@@ -161,6 +191,9 @@ services:
       - "/download/readarr/books:/books" #optional
       - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -175,6 +208,9 @@ services:
       - "/download/sonarr/tvseries:/tv" #optional
       - "/download/download:/downloads" #optional
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -187,6 +223,9 @@ services:
     volumes:
       - "/docker/arr-stack/prowlarr/data:/config"
     network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
   # overseerr:
   #   image: sctx/overseerr:latest

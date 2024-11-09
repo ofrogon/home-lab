@@ -1,0 +1,56 @@
+---
+
+services:
+  server:
+    image: gitea/gitea:1.22.3
+    restart: unless-stopped
+    container_name: gitea
+    # ports:
+    # - "3000:3000"
+    # - "222:22"
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: "db:5432"
+      GITEA__database__NAME: gitea
+      GITEA__database__USER: gitea
+      GITEA__database__PASSWD: $DATABASE_PSSWD
+      DISABLE_REGISTRATION: true
+    volumes:
+      - "/docker/gitea/data:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea-https.entrypoints=websecure"
+      - "traefik.http.routers.gitea-https.rule=Host(`gitea.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gitea-https.tls=true"
+      - "traefik.http.routers.gitea-https.tls.certresolver=production"
+      - "traefik.http.routers.gitea-https.service=gitea-svc"
+      - "traefik.http.services.gitea-svc.loadBalancer.server.port=3000"
+      - "traefik.docker.network=front-end"
+    depends_on:
+      - db
+    networks:
+      - front-end
+      - back-end
+
+  db:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gitea
+      POSTGRES_PASSWORD: $DATABASE_PSSWD
+      POSTGRES_DB: gitea
+    volumes:
+      - "/docker/gitea/db:/var/lib/postgresql/data"
+    networks:
+      - back-end
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true
