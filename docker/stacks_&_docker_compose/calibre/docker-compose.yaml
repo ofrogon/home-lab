@@ -1,0 +1,60 @@
+---
+
+services:
+  calibre-web-alex:
+    image: lscr.io/linuxserver/calibre-web:latest
+    restart: unless-stopped
+    container_name: calibre-web-alex
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      DOCKER_MODS: 'linuxserver/mods:universal-calibre'
+      OAUTHLIB_RELAX_TOKEN_SCOPE: 1
+    volumes:
+      - /docker/calibre/alex:/config
+      - /calibre/calibre:/books
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibre-alex-http.entrypoints=web"
+      - "traefik.http.routers.calibre-alex-http.rule=Host(`calibre.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.calibre-alex-https.entrypoints=websecure"
+      - "traefik.http.routers.calibre-alex-https.rule=Host(`calibre.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.calibre-alex-https.tls=true"
+      - "traefik.http.routers.calibre-alex-https.tls.certresolver=production"
+      - "traefik.http.routers.calibre-alex-https.service=calibre-alex-svc"
+      - "traefik.http.services.calibre-alex-svc.loadBalancer.server.port=8083"
+      - "traefik.docker.network=front-end"
+
+  calibre-web-andre:
+    image: lscr.io/linuxserver/calibre-web:latest
+    restart: unless-stopped
+    container_name: calibre-web-andre
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      DOCKER_MODS: 'linuxserver/mods:universal-calibre'
+      OAUTHLIB_RELAX_TOKEN_SCOPE: 1
+    volumes:
+      - /docker/calibre/andre:/config
+      - /calibre/andre:/books
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibre-andre-http.entrypoints=web"
+      - "traefik.http.routers.calibre-andre-http.rule=Host(`calibre-andre.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.calibre-andre-https.entrypoints=websecure"
+      - "traefik.http.routers.calibre-andre-https.rule=Host(`calibre-andre.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.calibre-andre-https.tls=true"
+      - "traefik.http.routers.calibre-andre-https.tls.certresolver=production"
+      - "traefik.http.routers.calibre-andre-https.service=calibre-andre-svc"
+      - "traefik.http.services.calibre-andre-svc.loadBalancer.server.port=8083"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
