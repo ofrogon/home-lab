@@ -36,7 +36,7 @@ services:
       - "traefik.http.routers.linkwarden-https.tls=true"
       - "traefik.http.routers.linkwarden-https.tls.certresolver=production"
       - "traefik.http.routers.linkwarden-https.service=linkwarden-svc"
-      - "traefik.http.services.linkwarden-svc.loadBalancer.server.port=8083"
+      - "traefik.http.services.linkwarden-svc.loadBalancer.server.port=3000"
       - "traefik.docker.network=front-end"
 
 networks:
