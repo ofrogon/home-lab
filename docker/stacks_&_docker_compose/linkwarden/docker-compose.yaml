@@ -26,7 +26,7 @@ services:
       - stack.env
     networks:
       - front-end
-      - back-end
+      - linkwarden
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.linkwarden-http.entrypoints=web"
