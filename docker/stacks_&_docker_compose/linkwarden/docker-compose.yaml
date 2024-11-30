@@ -1,0 +1,45 @@
+---
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: linkwarden-postgres
+    env_file:
+      - stack.env
+    restart: unless-stopped
+    volumes:
+      - "/docker/linkwarden/pgdata:/var/lib/postgresql/data"
+    networks:
+      - linkwarden
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: linkwarden
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+    volumes:
+      - "/docker/linkwarden/data:/data/data"
+    depends_on:
+      - postgres
+    env_file:
+      - stack.env
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.linkwarden-http.entrypoints=web"
+      - "traefik.http.routers.linkwarden-http.rule=Host(`linkwarden.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.linkwarden-https.entrypoints=websecure"
+      - "traefik.http.routers.linkwarden-https.rule=Host(`linkwarden.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.linkwarden-https.tls=true"
+      - "traefik.http.routers.linkwarden-https.tls.certresolver=production"
+      - "traefik.http.routers.linkwarden-https.service=linkwarden-svc"
+      - "traefik.http.services.linkwarden-svc.loadBalancer.server.port=8083"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
+  linkwarden:
