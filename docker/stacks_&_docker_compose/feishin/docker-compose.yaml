@@ -1,0 +1,35 @@
+services:
+  feishin:
+    image: 'ghcr.io/jeffvli/feishin:latest'
+    container_name: feishin
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      SERVER_NAME: jellyfin # pre defined server name
+      SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
+      SERVER_TYPE: jellyfin # navidrome also works
+      SERVER_URL: 'https://jellyfin.local.abeaudoin.xyz'
+      UMASK: 002
+    # ports:
+    # - 9180:9180
+    env_file:
+    - stack.env
+    networks:
+    - front-end
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.feishin-http.entrypoints=web"
+    - "traefik.http.routers.feishin-http.rule=Host(`feishin.local.abeaudoin.xyz`)"
+    - "traefik.http.routers.feishin-https.entrypoints=websecure"
+    - "traefik.http.routers.feishin-https.rule=Host(`feishin.local.abeaudoin.xyz`)"
+    - "traefik.http.routers.feishin-https.tls=true"
+    - "traefik.http.routers.feishin-https.tls.certresolver=production"
+    - "traefik.http.routers.feishin-https.service=feishin-svc"
+    - "traefik.http.services.feishin-svc.loadBalancer.server.port=9180"
+    - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true

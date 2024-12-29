@@ -28,6 +28,12 @@ services:
       - "traefik.http.routers.metube-https.service=metube-svc"
       - "traefik.http.services.metube-svc.loadBalancer.server.port=8081"
       - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.metube-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.metube-https-public.rule=Host(`metube.abeaudoin.xyz`)"
+      - "traefik.http.routers.metube-https-public.tls=true"
+      - "traefik.http.routers.metube-https-public.tls.certresolver=production"
+      - "traefik.http.routers.metube-https-public.service=metube-svc"
 
 networks:
   front-end:

@@ -1,0 +1,15 @@
+---
+services:
+  tunnel:
+    container_name: cloudflared-tunnel
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: $TUNNELTOKEN
+    networks:
+      - public
+
+networks:
+  public:
+    external: true
