@@ -1,0 +1,53 @@
+---
+
+services:
+  spliit:
+    image: registry.local.abeaudoin.xyz/spliit2:latest
+    container_name: spliit
+    environment:
+      TZ: America/Montreal
+      POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD}@spliit-db
+      POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD}@spliit-db
+      PUID: $PUID
+      PGID: $PGID
+    depends_on:
+      spliit-db:
+        condition: service_healthy
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spliit-http.entrypoints=web"
+      - "traefik.http.routers.spliit-http.rule=Host(`spliit.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.spliit-https.entrypoints=websecure"
+      - "traefik.http.routers.spliit-https.rule=Host(`spliit.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.spliit-https.tls=true"
+      - "traefik.http.routers.spliit-https.tls.certresolver=production"
+      - "traefik.http.routers.spliit-https.service=spliit-svc"
+      - "traefik.http.services.spliit-svc.loadBalancer.server.port=3000"
+      - "traefik.docker.network=front-end"
+
+  spliit-db:
+    image: postgres:latest
+    container_name: spliit-db
+    environment:
+      TZ: America/Montreal
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/spliit/data:/var/lib/postgresql/data"
+    networks:
+      - back-end
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true

@@ -1,0 +1,32 @@
+---
+
+services:
+  registry:
+    image: registry:latest
+    container_name: regsitry
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      UID: $PUID
+      GID: $PGID
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes:
+      - "/docker/registry/registry.password:/auth/registry.password"
+      - "/docker/registry/data:/data"
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry-http.entrypoints=web"
+      - "traefik.http.routers.registry-http.rule=Host(`registry.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.registry-https.entrypoints=websecure"
+      - "traefik.http.routers.registry-https.rule=Host(`registry.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.registry-https.tls=true"
+      - "traefik.http.routers.registry-https.tls.certresolver=production"
+      - "traefik.http.routers.registry-https.service=registry-svc"
+      - "traefik.http.services.registry-svc.loadBalancer.server.port=5000"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
