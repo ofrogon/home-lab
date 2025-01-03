@@ -27,6 +27,12 @@ services:
       - "traefik.http.routers.spliit-https.service=spliit-svc"
       - "traefik.http.services.spliit-svc.loadBalancer.server.port=3000"
       - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.spliit-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.spliit-https-public.rule=Host(`spliit.abeaudoin.xyz`)"
+      - "traefik.http.routers.spliit-https-public.tls=true"
+      - "traefik.http.routers.spliit-https-public.tls.certresolver=production"
+      - "traefik.http.routers.spliit-https-public.service=spliit-svc"
 
   spliit-db:
     image: postgres:latest
