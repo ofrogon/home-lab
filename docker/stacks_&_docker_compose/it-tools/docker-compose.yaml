@@ -1,0 +1,36 @@
+---
+
+services:
+  it-tools:
+    image: 'corentinth/it-tools:latest'
+    container_name: it-tools
+    environment:      
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    #ports:
+    #    - '8080:80'
+    restart: unless-stopped
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ittools-http.entrypoints=web"
+      - "traefik.http.routers.ittools-http.rule=Host(`it-tools.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ittools-https.entrypoints=websecure"
+      - "traefik.http.routers.ittools-https.rule=Host(`it-tools.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ittools-https.tls=true"
+      - "traefik.http.routers.ittools-https.tls.certresolver=production"
+      - "traefik.http.routers.ittools-https.service=ittools-svc"
+      - "traefik.http.services.ittools-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.ittools-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.ittools-https-public.rule=Host(`it-tools.abeaudoin.xyz`)"
+      - "traefik.http.routers.ittools-https-public.tls=true"
+      - "traefik.http.routers.ittools-https-public.tls.certresolver=production"
+      - "traefik.http.routers.ittools-https-public.service=ittools-svc"
+
+networks:
+  front-end:
+    external: true

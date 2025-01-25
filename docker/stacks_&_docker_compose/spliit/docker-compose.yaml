@@ -10,6 +10,7 @@ services:
       POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD}@spliit-db
       PUID: $PUID
       PGID: $PGID
+    restart: unless-stopped
     depends_on:
       spliit-db:
         condition: service_healthy
@@ -42,6 +43,7 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       PUID: $PUID
       PGID: $PGID
+    restart: unless-stopped
     volumes:
       - "/docker/spliit/data:/var/lib/postgresql/data"
     networks:
