@@ -34,6 +34,7 @@ services:
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       UPDATER_PERIOD: 24h
       SERVER_COUNTRIES: $SERVER_COUNTRIES
+      FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
       - "/docker/arr-stack/gluetun:/gluetun"
     networks:
