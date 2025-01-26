@@ -1,0 +1,84 @@
+---
+
+services:
+  vikunja:
+    image: vikunja/vikunja
+    container_name: vikunja
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      VIKUNJA_SERVICE_PUBLICURL: $IKUNJA_SERVICE_PUBLICURL
+      VIKUNJA_DATABASE_HOST: vinkunjasql
+      VIKUNJA_DATABASE_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
+      VIKUNJA_DATABASE_TYPE: mysql
+      VIKUNJA_DATABASE_USER: $VIKUNJA_DATABASE_USER
+      VIKUNJA_DATABASE_DATABASE: vikunja
+      VIKUNJA_SERVICE_JWTSECRET: ${VIKUNJA_SERVICE_JWTSECRET}
+      VIKUNJA_MIGRATION_TODOIST_ENABLE: true
+      VIKUNJA_MIGRATION_TODOIST_CLIENTID: ${VIKUNJA_MIGRATION_TODOIST_CLIENTID}
+      VIKUNJA_MIGRATION_TODOIST_CLIENTSECRET: ${VIKUNJA_MIGRATION_TODOIST_CLIENTSECRET}
+      VIKUNJA_MIGRATION_TODOIST_REDIRECTURL: ${VIKUNJA_MIGRATION_TODOIST_REDIRECTURL}
+      VIKUNJA_MAILER_ENABLED: true
+      VIKUNJA_MAILER_HOST: ${VIKUNJA_MAILER_HOST}
+      VIKUNJA_MAILER_PORT: ${VIKUNJA_MAILER_PORT}
+      VIKUNJA_MAILER_AUTHTYPE: ${VIKUNJA_MAILER_AUTHTYPE}
+      VIKUNJA_MAILER_USERNAME: ${VIKUNJA_MAILER_USERNAME}
+      VIKUNJA_MAILER_PASSWORD: ${VIKUNJA_MAILER_PASSWORD}
+      VIKUNJA_MAILER_FORCESSL: true
+      # There is something strange with the OPENID confir, try againt on next build >0.24.6
+ #     VIKUNJA_AUTH_OPENID_ENABLED: true
+      VIKUNJA_AUTH_OPENID_PROVIDERS: 'AUTHENTIk'
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_NAME: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_NAME}
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_AUTHURL: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_AUTHURL}
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTID: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTID}
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTSECRET: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTSECRET}
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL}
+      VIKUNJA_AUTH_LOCAL_ENABLED: true
+#    ports:
+#      - 3456:3456
+    volumes:
+      - /docker/vikunja/files:/app/vikunja/files
+    restart: unless-stopped
+    depends_on:
+      vinkunjasql:
+        condition: service_healthy
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.todo-https.entrypoints=websecure"
+      - "traefik.http.routers.todo-https.rule=Host(`todo.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.todo-https.tls=true"
+      - "traefik.http.routers.todo-https.tls.certresolver=production"
+      - "traefik.http.routers.todo-https.service=todo-svc"
+      - "traefik.http.services.todo-svc.loadBalancer.server.port=3456"
+      - "traefik.docker.network=front-end"
+      
+  vinkunjasql:
+    image: mariadb:10
+    container_name: vinkunja-sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      PUID: $PUID
+      PGID: $PGID
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: vikunja
+      MYSQL_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
+      MYSQL_DATABASE: $VIKUNJA_DATABASE_USER
+    volumes:
+      - /docker/vikunja/db:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"]
+      interval: 2s
+      start_period: 30s
+    networks:
+      - back-end
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true
