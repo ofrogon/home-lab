@@ -2,7 +2,7 @@
 
 services:
   server:
-    image: gitea/gitea:1.22.3
+    image: gitea/gitea:latest
     restart: unless-stopped
     container_name: gitea
     # ports:
