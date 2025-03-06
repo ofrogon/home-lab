@@ -1,0 +1,32 @@
+---
+
+services:
+  wallos:
+    image: bellamy/wallos:latest
+    restart: unless-stopped
+    container_name: wallos
+    user: "${PUID}:${PGID}"
+    #    ports:
+    #      - "8282:80/tcp"
+    environment:
+      TZ: America/Montreal
+      UID: $PUID
+      GID: $PGID
+    volumes:
+      - '/docker/wallos/db:/var/www/html/db'
+      - '/docker/wallos/logos:/var/www/html/images/uploads/logos'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wallos-https.entrypoints=websecure"
+      - "traefik.http.routers.wallos-https.rule=Host(`wallos.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.wallos-https.tls=true"
+      - "traefik.http.routers.wallos-https.tls.certresolver=production"
+      - "traefik.http.routers.wallos-https.service=wallos-svc"
+      - "traefik.http.services.wallos-svc.loadBalancer.server.port=8282"
+      - "traefik.docker.network=front-end"
+    networks:
+      - front-end
+
+networks:
+  front-end:
+    external: true
