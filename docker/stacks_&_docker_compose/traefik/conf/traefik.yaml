@@ -36,6 +36,9 @@ entryPoints:
     address: :443
   websecurepublic:
     address: :8443
+    http:
+      middlewares:
+        - crowdsec-bouncer@file
   # -- (Optional) Add custom Entrypoint
   # custom:
   #   address: :8080
@@ -86,3 +89,9 @@ providers:
   file:
     directory: /etc/traefik
     watch: true
+
+log:
+  level: "INFO"
+  filePath: "/var/log/traefik/traefik.log"
+accessLog:
+  filePath: "/var/log/traefik/access.log"
