@@ -12,6 +12,7 @@ services:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
+      HOMEPAGE_ALLOWED_HOSTS: $HOMEPAGE_ALLOWED_HOSTS
     volumes:
       - "/docker/homepage/config:/app/config"
       - "/docker/homepage/icons:/app/public/icons"
