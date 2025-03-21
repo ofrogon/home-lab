@@ -1,0 +1,40 @@
+---
+
+services:
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    restart: unless-stopped
+    command:
+      - serve
+    environment:
+      TZ: America/Montreal
+    user: "${PUID}:${PGID}"
+    volumes:
+      - /docker/ntfy/cache:/var/cache/ntfy
+      - /docker/ntfy/etc:/etc/ntfy
+#    ports:
+#      - 80:80
+    healthcheck: # optional: remember to adapt the host:port to your environment
+        test: ["CMD-SHELL", "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"]
+        interval: 60s
+        timeout: 10s
+        retries: 3
+        start_period: 40s
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ntfy-http.entrypoints=web"
+      - "traefik.http.routers.ntfy-http.rule=Host(`ntfy.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ntfy-https.entrypoints=websecure"
+      - "traefik.http.routers.ntfy-https.rule=Host(`ntfy.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.ntfy-https.tls=true"
+      - "traefik.http.routers.ntfy-https.tls.certresolver=production"
+      - "traefik.http.routers.ntfy-https.service=ntfy-svc"
+      - "traefik.http.services.ntfy-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true

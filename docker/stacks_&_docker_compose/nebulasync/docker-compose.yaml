@@ -6,7 +6,7 @@ services:
     container_name: nebula-sync
     restart: unless-stopped
     environment:
-      - PRIMARY=$PRIMARY_URL|$PRIMARY_PASSWORD
-      - REPLICAS=$SECONDARY_URL|$SECONDARY_PASSWORD
-      - FULL_SYNC=true
-      - CRON=42 * * * *
+      PRIMARY: $PRIMARY_URL|$PRIMARY_PASSWORD
+      REPLICAS: $SECONDARY_URL|$SECONDARY_PASSWORD
+      FULL_SYNC: true
+      CRON: 42 * * * *
