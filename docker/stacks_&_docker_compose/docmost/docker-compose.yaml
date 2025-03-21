@@ -1,0 +1,61 @@
+---
+
+services:
+  docmost:
+    image: docmost/docmost:latest
+    restart: unless-stopped
+    container_name: docmost
+    depends_on:
+      - docmostsql
+      - docmostredis
+    environment:
+      TZ: America/Montreal
+      APP_URL: "https://docmost.local.abeaudoin.xyz"
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: "postgresql://docmost:${DB_PASSWORD}@docmostsql:5432/docmost?schema=public"
+      REDIS_URL: "redis://docmostredis:6379"
+    # ports:
+    #   - "3000:3000"
+    volumes:
+      - /docker/docmost/storage:/app/data/storage
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docmost-https.entrypoints=websecure"
+      - "traefik.http.routers.docmost-https.rule=Host(`docmost.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.docmost-https.tls=true"
+      - "traefik.http.routers.docmost-https.tls.certresolver=production"
+      - "traefik.http.routers.docmost-https.service=docmost-svc"
+      - "traefik.http.services.docmost-svc.loadBalancer.server.port=3000"
+      - "traefik.docker.network=front-end"
+
+  docmostsql:
+    image: postgres:16-alpine
+    environment:
+      TZ: America/Montreal
+      POSTGRES_DB: docmost
+      POSTGRES_USER: docmost
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - /docker/docmost/db:/var/lib/postgresql/data
+    networks:
+      - back-end
+
+  docmostredis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    volumes:
+      - /docker/docmost/redis:/data
+    environment:
+      TZ: America/Montreal
+    networks:
+      - back-end
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true
