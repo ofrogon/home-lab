@@ -1,0 +1,23 @@
+. {
+  view local {
+    expr incidr(client_ip(), '192.168.0.0/16')# && name() matches '^.*\\.local\\.abeaudoin\\.xyz\\.$'
+  }
+  hosts {
+    192.168.99.81 music.local.abeaudoin.xyz jellyfin.local.abeaudoin.xyz draw.local.abeaudoin.xyz maison.local.abeaudoin.xyz metube.local.abeaudoin.xyz it-tools.local.abeaudoin.xyz wallos.local.abeaudoin.xyz docmost.local.abeaudoin.xyz feishin.local.abeaudoin.xyz
+  }
+  forward . 192.168.99.7
+}
+
+. {
+  view tailscale {
+    expr incidr(client_ip(), '100.0.0.0/8')
+  }
+  hosts {
+    100.86.146.23 music.local.abeaudoin.xyz jellyfin.local.abeaudoin.xyz draw.local.abeaudoin.xyz maison.local.abeaudoin.xyz metube.local.abeaudoin.xyz it-tools.local.abeaudoin.xyz wallos.local.abeaudoin.xyz docmost.local.abeaudoin.xyz feishin.local.abeaudoin.xyz
+  }
+  forward . 1.1.1.1
+}
+
+. {
+  forward . 1.1.1.1
+}
