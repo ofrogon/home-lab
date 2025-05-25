@@ -1,3 +1,5 @@
+---
+
 services:
   feishin:
     image: 'ghcr.io/jeffvli/feishin:latest'

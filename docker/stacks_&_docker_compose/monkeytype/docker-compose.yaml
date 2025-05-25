@@ -1,0 +1,131 @@
+---
+
+services:
+  monkeytype-frontend:
+    container_name: monkeytype-frontend
+    image: monkeytype/monkeytype-frontend:latest
+#    ports:
+#      - "${HTTP_PORT:-8080}:80"
+    restart: on-failure
+    depends_on:
+      monkeytype-backend:
+        condition: service_healthy
+    environment:
+      - FIREBASE_APIKEY=${FIREBASE_APIKEY:-}
+      - FIREBASE_AUTHDOMAIN=${FIREBASE_AUTHDOMAIN:-}
+      - FIREBASE_PROJECTID=${FIREBASE_PROJECTID:-}
+      - FIREBASE_STORAGEBUCKET=${FIREBASE_STORAGEBUCKET:-}
+      - FIREBASE_MESSAGINGSENDERID=${FIREBASE_MESSAGINGSENDERID:-}
+      - FIREBASE_APPID=${FIREBASE_APPID:-}
+      - MONKEYTYPE_BACKENDURL=${MONKEYTYPE_BACKENDURL}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
+    networks:
+      - front-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monkeytype-http.entrypoints=web"
+      - "traefik.http.routers.monkeytype-http.rule=Host(`monkeytype.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.monkeytype-https.entrypoints=websecure"
+      - "traefik.http.routers.monkeytype-https.rule=Host(`monkeytype.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.monkeytype-https.tls=true"
+      - "traefik.http.routers.monkeytype-https.tls.certresolver=production"
+      - "traefik.http.routers.monkeytype-https.service=monkeytype-svc"
+      - "traefik.http.services.monkeytype-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+
+  monkeytype-backend:
+    container_name: monkeytype-backend
+    image: monkeytype/monkeytype-backend:latest
+#    ports:
+#      - "${BACKEND_PORT:-5005}:5005"
+    restart: on-failure
+    environment:
+      - MODE=dev
+      - DB_NAME=monkeytype
+      - DB_URI=mongodb://monkeytype-mongodb:27017
+      - REDIS_URI=redis://monkeytype-redis:6379
+      - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
+      - RECAPTCHA_SECRET=${RECAPTCHA_SECRET:-}
+    volumes:
+      #uncomment to enable the account system, check the SELF_HOSTING.md file
+      #- type: bind
+      #  source: ./serviceAccountKey.json
+      #  target: /app/backend/src/credentials/serviceAccountKey.json
+      #  read_only: true
+      - type: bind
+        source: /docker/monkeytype/backend-configuration.json
+        target: /app/backend/dist/backend-configuration.json
+        read_only: true
+    depends_on:
+      monkeytype-redis:
+        condition: service_healthy
+      monkeytype-mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "-v", "localhost", "5005"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 5s
+    networks:
+      - front-end
+      - back-end
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monkeytype-be-http.entrypoints=web"
+      - "traefik.http.routers.monkeytype-be-http.rule=Host(`monkeytype-be.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.monkeytype-be-https.entrypoints=websecure"
+      - "traefik.http.routers.monkeytype-be-https.rule=Host(`monkeytype-be.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.monkeytype-be-https.tls=true"
+      - "traefik.http.routers.monkeytype-be-https.tls.certresolver=production"
+      - "traefik.http.routers.monkeytype-be-https.service=monkeytype-be-svc"
+      - "traefik.http.services.monkeytype-be-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+      
+  monkeytype-redis:
+    container_name: monkeytype-redis
+    image: redis:6.2.6
+    #uncomment if you want to expose the redis server
+    #ports:
+    #  - "${REDIS_PORT:-6379}:6379"
+    restart: on-failure
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
+    networks:
+      - back-end
+
+  monkeytype-mongodb:
+    container_name: monkeytype-mongodb
+    image: mongo:5.0.13
+    restart: on-failure
+    volumes:
+      - mongo-data:/data/db
+    #uncomment if you want to expose the mongodb server
+    #ports:
+    #  - "${MONGO_PORT:-27017}:27017"
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
+    networks:
+      - back-end
+
+volumes:
+  mongo-data:
+    name: monkeytype_mongo_data
+  redis-data:
+    name: monkeytype_redis_data
+
+networks:
+  front-end:
+    external: true
+  back-end:
+    external: true
