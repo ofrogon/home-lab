@@ -22,6 +22,7 @@ services:
       # - 8989:8989 # Sonarr
       # - 9696:9696 # Prowlarr
       # - 9705:9705 # Huntarr
+      # - 6767:6767 # Bazarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       VPN_SERVICE_PROVIDER: protonvpn
@@ -102,6 +103,12 @@ services:
       - "traefik.http.routers.huntarr-https.tls.certresolver=production"
       - "traefik.http.routers.huntarr-https.service=huntarr-svc"
       - "traefik.http.services.huntarr-svc.loadbalancer.server.port=9705"
+
+      - "traefik.http.routers.bazarr-https.rule=Host(`bazarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.bazarr-https.entrypoints=websecure"
+      - "traefik.http.routers.bazarr-https.tls.certresolver=production"
+      - "traefik.http.routers.bazarr-https.service=bazarr-svc"
+      - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
@@ -215,6 +222,23 @@ services:
       - "/docker/arr-stack/sonarr/data:/config"
       - "/download/sonarr/tvseries:/tv" #optional
       - "/download/download:/downloads" #optional
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/arr-stack/bazarr/config:/config"
+      - "/download/radarr/movies:/movies" #optional
+      - "/download/sonarr/tvseries:/tv" #optional
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
