@@ -21,20 +21,21 @@ services:
       # - 8787:8787 # Readarr
       # - 8989:8989 # Sonarr
       # - 9696:9696 # Prowlarr
+      # - 9705:9705 # Huntarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      VPN_SERVICE_PROVIDER: mullvad
+      VPN_SERVICE_PROVIDER: protonvpn
       VPN_TYPE: wireguard
       # Wireguard:
       WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
-      WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
+      #WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
       # Timezone for accurate log times
       TZ: America/Montreal
       # Server list updater
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       UPDATER_PERIOD: 24h
       SERVER_COUNTRIES: $SERVER_COUNTRIES
-      FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
+      # FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
       - "/docker/arr-stack/gluetun:/gluetun"
     networks:
@@ -95,6 +96,12 @@ services:
       - "traefik.http.routers.prowlarr-https.tls.certresolver=production"
       - "traefik.http.routers.prowlarr-https.service=prowlarr-svc"
       - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
+
+      - "traefik.http.routers.huntarr-https.rule=Host(`huntarr.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.huntarr-https.entrypoints=websecure"
+      - "traefik.http.routers.huntarr-https.tls.certresolver=production"
+      - "traefik.http.routers.huntarr-https.service=huntarr-svc"
+      - "traefik.http.services.huntarr-svc.loadbalancer.server.port=9705"
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
@@ -223,6 +230,21 @@ services:
       PGID: $PGID
     volumes:
       - "/docker/arr-stack/prowlarr/data:/config"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+  huntarr:
+    image: ghcr.io/plexguide/huntarr:latest
+    container_name: huntarr
+    restart: unless-stopped
+    volumes:
+      - "/docker/arr-stack/huntarr:/config"
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
