@@ -1,5 +1,4 @@
 ---
-
 services:
   coredns:
     image: coredns/coredns:latest
@@ -11,3 +10,5 @@ services:
       - '53:53/udp'
     volumes:
       - '/docker/coredns:/etc/coredns'
+    labels:
+      - 'diun.enable=true'

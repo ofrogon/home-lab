@@ -1,5 +1,4 @@
 ---
-
 services:
   tunnel:
     container_name: cloudflared-tunnel
@@ -10,6 +9,8 @@ services:
       TUNNEL_TOKEN: $TUNNEL_TOKEN
     networks:
       - public
+    labels:
+      - 'diun.enable=true'
 
 networks:
   public:

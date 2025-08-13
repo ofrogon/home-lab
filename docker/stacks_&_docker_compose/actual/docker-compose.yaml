@@ -1,9 +1,10 @@
+---
 services:
   actual_server:
     image: docker.io/actualbudget/actual-server:latest
     container_name: actual
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: '${PUID}:${PGID}'
     # ports:
     #   - 5006:5006
     environment:
@@ -19,21 +20,21 @@ services:
       # ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB: 20
       # See all options and more details at https://actualbudget.github.io/docs/Installing/Configuration
     volumes:
-      - "/docker/actual/data:/data"
+      - '/docker/actual/data:/data'
     networks:
       - front-end
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.actual-http.entrypoints=web"
-      - "traefik.http.routers.actual-http.rule=Host(`actual.local.abeaudoin.xyz`)"
-      - "traefik.http.routers.actual-https.entrypoints=websecure"
-      - "traefik.http.routers.actual-https.rule=Host(`actual.local.abeaudoin.xyz`)"
-      - "traefik.http.routers.actual-https.tls=true"
-      - "traefik.http.routers.actual-https.tls.certresolver=production"
-      - "traefik.http.routers.actual-https.service=actual-svc"
-      - "traefik.http.services.actual-svc.loadBalancer.server.port=5006"
-      - "traefik.http.routers.actual-https.middlewares=authentik@file"
-      - "traefik.docker.network=front-end"
+      - 'diun.enable=true'
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.actual-http.entrypoints=web'
+      - 'traefik.http.routers.actual-http.rule=Host(`${TOP_URL:-actual}.${BASE_URL:?error}`)'
+      - 'traefik.http.routers.actual-https.entrypoints=websecure'
+      - 'traefik.http.routers.actual-https.rule=Host(`${TOP_URL:-actual}.${BASE_URL:?error}`)'
+      - 'traefik.http.routers.actual-https.tls=true'
+      - 'traefik.http.routers.actual-https.tls.certresolver=production'
+      - 'traefik.http.routers.actual-https.service=actual-svc'
+      - 'traefik.http.services.actual-svc.loadBalancer.server.port=5006'
+      - 'traefik.docker.network=front-end'
 
 networks:
   front-end:
