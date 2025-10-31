@@ -5,9 +5,9 @@ services:
     image: gitea/gitea:latest
     restart: unless-stopped
     container_name: gitea
-    # ports:
+    ports:
     # - "3000:3000"
-    # - "222:22"
+    - "2221:22"
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -17,6 +17,8 @@ services:
       GITEA__database__NAME: gitea
       GITEA__database__USER: gitea
       GITEA__database__PASSWD: $DATABASE_PSSWD
+      GITEA__server__SSH_PORT: 2221
+      GITEA__server__ROOT_URL: https://${TOP_URL:-gitea}.${BASE_URL:?error}
       DISABLE_REGISTRATION: true
     volumes:
       - "/docker/gitea/data:/data"
@@ -25,7 +27,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea-https.entrypoints=websecure"
-      - "traefik.http.routers.gitea-https.rule=Host(`gitea.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gitea-https.rule=Host(`${TOP_URL:-gitea}.${BASE_URL:?error}`)"
       - "traefik.http.routers.gitea-https.tls=true"
       - "traefik.http.routers.gitea-https.tls.certresolver=production"
       - "traefik.http.routers.gitea-https.service=gitea-svc"
