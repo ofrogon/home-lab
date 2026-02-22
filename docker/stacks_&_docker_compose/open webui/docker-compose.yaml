@@ -18,6 +18,7 @@ services:
     networks:
       - front-end
     labels:
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ai-http.entrypoints=web"
       - "traefik.http.routers.ai-http.rule=Host(`ai.local.abeaudoin.xyz`)"
