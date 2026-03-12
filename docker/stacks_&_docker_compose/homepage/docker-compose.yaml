@@ -20,11 +20,12 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.homepage-http.entrypoints=web"
-      - "traefik.http.routers.homepage-http.rule=Host(`dash.abeaudoin.xyz`)"
+      - 'traefik.http.routers.homepage-http.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?error}`)'
       - "traefik.http.routers.homepage-https.entrypoints=websecure"
-      - "traefik.http.routers.homepage-https.rule=Host(`dash.abeaudoin.xyz`)"
+      - 'traefik.http.routers.homepage-https.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?error}`)'
       - "traefik.http.routers.homepage-https.tls=true"
       - "traefik.http.routers.homepage-https.tls.certresolver=production"
       - "traefik.http.routers.homepage-https.service=homepage-svc"

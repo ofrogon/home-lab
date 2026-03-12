@@ -16,9 +16,10 @@ services:
       - '/docker/wallos/db:/var/www/html/db'
       - '/docker/wallos/logos:/var/www/html/images/uploads/logos'
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.wallos-https.entrypoints=websecure"
-      - "traefik.http.routers.wallos-https.rule=Host(`wallos.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.wallos-https.rule=Host(`${TOP_URL:-wallos}.${BASE_URL:?error}`)'
       - "traefik.http.routers.wallos-https.tls=true"
       - "traefik.http.routers.wallos-https.tls.certresolver=production"
       - "traefik.http.routers.wallos-https.service=wallos-svc"

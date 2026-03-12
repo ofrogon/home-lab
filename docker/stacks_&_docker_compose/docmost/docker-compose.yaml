@@ -22,9 +22,10 @@ services:
       - front-end
       - back-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.docmost-https.entrypoints=websecure"
-      - "traefik.http.routers.docmost-https.rule=Host(`docmost.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.docmost-https.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?error}`)'
       - "traefik.http.routers.docmost-https.tls=true"
       - "traefik.http.routers.docmost-https.tls.certresolver=production"
       - "traefik.http.routers.docmost-https.service=docmost-svc"

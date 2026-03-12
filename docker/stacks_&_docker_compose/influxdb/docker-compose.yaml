@@ -18,11 +18,12 @@ services:
       - front-end
       - back-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.influxdb-http.entrypoints=web"
-      - "traefik.http.routers.influxdb-http.rule=Host(`influxdb.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.influxdb-http.rule=Host(`${TOP_URL:-influxdb}.${BASE_URL:?error}`)'
       - "traefik.http.routers.influxdb-https.entrypoints=websecure"
-      - "traefik.http.routers.influxdb-https.rule=Host(`influxdb.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.influxdb-https.rule=Host(`${TOP_URL:-influxdb}.${BASE_URL:?error}`)'
       - "traefik.http.routers.influxdb-https.tls=true"
       - "traefik.http.routers.influxdb-https.tls.certresolver=production"
       - "traefik.http.routers.influxdb-https.service=influxdb-svc"

@@ -37,11 +37,12 @@ services:
         max-size: "1m"
         max-file: "1"
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.search-http.entrypoints=web"
-      - "traefik.http.routers.search-http.rule=Host(`${SEARXNG_HOSTNAME}`)"
+      - 'traefik.http.routers.search-http.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)'
       - "traefik.http.routers.search-https.entrypoints=websecure"
-      - "traefik.http.routers.search-https.rule=Host(`${SEARXNG_HOSTNAME}`)"
+      - 'traefik.http.routers.search-https.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)'
       - "traefik.http.routers.search-https.tls=true"
       - "traefik.http.routers.search-https.tls.certresolver=production"
       - "traefik.http.routers.search-https.service=search-svc"

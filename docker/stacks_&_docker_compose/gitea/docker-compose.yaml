@@ -25,6 +25,7 @@ services:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     labels:
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.gitea-https.entrypoints=websecure"
       - "traefik.http.routers.gitea-https.rule=Host(`${TOP_URL:-gitea}.${BASE_URL:?error}`)"

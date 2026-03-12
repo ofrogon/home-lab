@@ -24,9 +24,10 @@ services:
       - front-end
       - back-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.hoarder-https.entrypoints=websecure"
-      - "traefik.http.routers.hoarder-https.rule=Host(`hoarder.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.hoarder-https.rule=Host(`${TOP_URL:-hoarder}.${BASE_URL:?error}`)'
       - "traefik.http.routers.hoarder-https.tls=true"
       - "traefik.http.routers.hoarder-https.tls.certresolver=production"
       - "traefik.http.routers.hoarder-https.service=hoarder-svc"
@@ -51,6 +52,8 @@ services:
       PGID: $PGID
     networks:
       - back-end
+    labels:
+      - 'diun.enable=true'
 
   meilisearch:
     image: getmeili/meilisearch:v1.6
@@ -68,6 +71,8 @@ services:
       - stack.env
     networks:
       - back-end
+    labels:
+      - 'diun.enable=true'
 
 volumes:
   meilisearch:

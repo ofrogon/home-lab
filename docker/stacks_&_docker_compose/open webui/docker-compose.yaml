@@ -21,9 +21,9 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ai-http.entrypoints=web"
-      - "traefik.http.routers.ai-http.rule=Host(`ai.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ai-http.rule=Host(`${TOP_URL:-ai}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ai-https.entrypoints=websecure"
-      - "traefik.http.routers.ai-https.rule=Host(`ai.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ai-https.rule=Host(`${TOP_URL:-ai}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ai-https.tls=true"
       - "traefik.http.routers.ai-https.tls.certresolver=production"
       - "traefik.http.routers.ai-https.service=ai-svc"

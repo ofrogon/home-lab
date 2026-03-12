@@ -15,3 +15,5 @@ services:
       WATCHTOWER_NOTIFICATIONS_HOSTNAME: $WATCHTOWER_NOTIFICATIONS_HOSTNAME
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - 'diun.enable=true'

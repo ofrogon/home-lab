@@ -24,11 +24,12 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.music-http.entrypoints=web"
-      - "traefik.http.routers.music-http.rule=Host(`music.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.music-http.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)'
       - "traefik.http.routers.music-https.entrypoints=websecure"
-      - "traefik.http.routers.music-https.rule=Host(`music.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.music-https.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)'
       - "traefik.http.routers.music-https.tls=true"
       - "traefik.http.routers.music-https.tls.certresolver=production"
       - "traefik.http.routers.music-https.service=music-svc"

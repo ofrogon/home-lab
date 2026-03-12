@@ -18,11 +18,12 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.metube-http.entrypoints=web"
-      - "traefik.http.routers.metube-http.rule=Host(`metube.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.actual-http.rule=Host(`${TOP_URL:-metube}.${BASE_URL:?error}`)'
       - "traefik.http.routers.metube-https.entrypoints=websecure"
-      - "traefik.http.routers.metube-https.rule=Host(`metube.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.actual-https.rule=Host(`${TOP_URL:-metube}.${BASE_URL:?error}`)'
       - "traefik.http.routers.metube-https.tls=true"
       - "traefik.http.routers.metube-https.tls.certresolver=production"
       - "traefik.http.routers.metube-https.service=metube-svc"

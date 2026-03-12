@@ -47,9 +47,10 @@ services:
       - front-end
       - back-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.todo-https.entrypoints=websecure"
-      - "traefik.http.routers.todo-https.rule=Host(`todo.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.todo-https.rule=Host(`${TOP_URL:-todo}.${BASE_URL:?error}`)'
       - "traefik.http.routers.todo-https.tls=true"
       - "traefik.http.routers.todo-https.tls.certresolver=production"
       - "traefik.http.routers.todo-https.service=todo-svc"
@@ -76,6 +77,8 @@ services:
       start_period: 30s
     networks:
       - back-end
+    labels:
+      - 'diun.enable=true'
 
 networks:
   front-end:

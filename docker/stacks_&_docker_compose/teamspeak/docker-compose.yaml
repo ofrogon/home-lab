@@ -21,6 +21,8 @@ services:
     networks:
       - front-end
       - back-end
+    labels:
+      - 'diun.enable=true'
 
   teamspeak-db:
     image: mariadb

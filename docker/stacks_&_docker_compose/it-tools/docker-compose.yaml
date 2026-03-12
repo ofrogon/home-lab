@@ -14,11 +14,12 @@ services:
     networks:
       - front-end
     labels:
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.ittools-http.entrypoints=web"
-      - "traefik.http.routers.ittools-http.rule=Host(`it-tools.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ittools-http.rule=Host(`${TOP_URL:-it-tools}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ittools-https.entrypoints=websecure"
-      - "traefik.http.routers.ittools-https.rule=Host(`it-tools.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ittools-https.rule=Host(`${TOP_URL:-it-tools}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ittools-https.tls=true"
       - "traefik.http.routers.ittools-https.tls.certresolver=production"
       - "traefik.http.routers.ittools-https.service=ittools-svc"

@@ -18,6 +18,7 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.gotify-http.entrypoints=web"
       - "traefik.http.routers.gotify-http.rule=Host(`gotify.local.abeaudoin.xyz`)"

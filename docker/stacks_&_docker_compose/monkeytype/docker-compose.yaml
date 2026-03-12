@@ -22,11 +22,12 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.monkeytype-http.entrypoints=web"
-      - "traefik.http.routers.monkeytype-http.rule=Host(`monkeytype.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)'
       - "traefik.http.routers.monkeytype-https.entrypoints=websecure"
-      - "traefik.http.routers.monkeytype-https.rule=Host(`monkeytype.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)'
       - "traefik.http.routers.monkeytype-https.tls=true"
       - "traefik.http.routers.monkeytype-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-https.service=monkeytype-svc"
@@ -71,11 +72,12 @@ services:
       - front-end
       - back-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.monkeytype-be-http.entrypoints=web"
-      - "traefik.http.routers.monkeytype-be-http.rule=Host(`monkeytype-be.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)'
       - "traefik.http.routers.monkeytype-be-https.entrypoints=websecure"
-      - "traefik.http.routers.monkeytype-be-https.rule=Host(`monkeytype-be.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)'
       - "traefik.http.routers.monkeytype-be-https.tls=true"
       - "traefik.http.routers.monkeytype-be-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-be-https.service=monkeytype-be-svc"

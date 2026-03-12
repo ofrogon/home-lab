@@ -21,11 +21,12 @@ services:
     networks:
     - front-end
     labels:
+    - "diun.enable=true"
     - "traefik.enable=true"
     - "traefik.http.routers.feishin-http.entrypoints=web"
-    - "traefik.http.routers.feishin-http.rule=Host(`feishin.local.abeaudoin.xyz`)"
+    - "traefik.http.routers.feishin-http.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error}`)"
     - "traefik.http.routers.feishin-https.entrypoints=websecure"
-    - "traefik.http.routers.feishin-https.rule=Host(`feishin.local.abeaudoin.xyz`)"
+    - "traefik.http.routers.feishin-https.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error}`)"
     - "traefik.http.routers.feishin-https.tls=true"
     - "traefik.http.routers.feishin-https.tls.certresolver=production"
     - "traefik.http.routers.feishin-https.service=feishin-svc"

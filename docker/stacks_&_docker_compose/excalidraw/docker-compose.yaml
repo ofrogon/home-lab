@@ -12,11 +12,12 @@ services:
     networks:
       - front-end
     labels:
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.excalidraw-http.entrypoints=web"
-      - "traefik.http.routers.excalidraw-http.rule=Host(`draw.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.excalidraw-http.rule=Host(`${TOP_URL:-draw}.${BASE_URL:?error}`)"
       - "traefik.http.routers.excalidraw-https.entrypoints=websecure"
-      - "traefik.http.routers.excalidraw-https.rule=Host(`draw.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.excalidraw-https.rule=Host(`${TOP_URL:-draw}.${BASE_URL:?error}`)"
       - "traefik.http.routers.excalidraw-https.tls=true"
       - "traefik.http.routers.excalidraw-https.tls.certresolver=production"
       - "traefik.http.routers.excalidraw-https.service=excalidraw-svc"

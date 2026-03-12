@@ -20,9 +20,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.spliit-http.entrypoints=web"
-      - "traefik.http.routers.spliit-http.rule=Host(`spliit.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.spliit-http.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?error}`)'
       - "traefik.http.routers.spliit-https.entrypoints=websecure"
-      - "traefik.http.routers.spliit-https.rule=Host(`spliit.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.spliit-https.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?error}`)'
       - "traefik.http.routers.spliit-https.tls=true"
       - "traefik.http.routers.spliit-https.tls.certresolver=production"
       - "traefik.http.routers.spliit-https.service=spliit-svc"

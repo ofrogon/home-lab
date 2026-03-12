@@ -6,7 +6,7 @@ secrets:
 
 services:
   traefik:
-    image: traefik:v3.2
+    image: traefik:v3.6
     container_name: traefik
     restart: unless-stopped
     ports:
@@ -31,6 +31,8 @@ services:
       - front-end
     env_file:
       - stack.env
+    labels:
+      - 'diun.enable=true'
 
 networks:
   front-end:

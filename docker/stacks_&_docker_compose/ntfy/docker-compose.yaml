@@ -24,11 +24,12 @@ services:
     networks:
       - front-end
     labels:
+      - 'diun.enable=true'
       - "traefik.enable=true"
       - "traefik.http.routers.ntfy-http.entrypoints=web"
-      - "traefik.http.routers.ntfy-http.rule=Host(`ntfy.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ntfy-http.rule=Host(`${TOP_URL:-ntfy}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ntfy-https.entrypoints=websecure"
-      - "traefik.http.routers.ntfy-https.rule=Host(`ntfy.local.abeaudoin.xyz`)"
+      - 'traefik.http.routers.ntfy-https.rule=Host(`${TOP_URL:-ntfy}.${BASE_URL:?error}`)'
       - "traefik.http.routers.ntfy-https.tls=true"
       - "traefik.http.routers.ntfy-https.tls.certresolver=production"
       - "traefik.http.routers.ntfy-https.service=ntfy-svc"
