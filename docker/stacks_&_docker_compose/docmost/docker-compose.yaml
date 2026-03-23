@@ -10,7 +10,7 @@ services:
       - docmostredis
     environment:
       TZ: America/Montreal
-      APP_URL: "https://docmost.local.abeaudoin.xyz"
+      APP_URL: "https://${TOP_URL:-docmost}.${BASE_URL:?error}"
       APP_SECRET: ${APP_SECRET}
       DATABASE_URL: "postgresql://docmost:${DB_PASSWORD}@docmostsql:5432/docmost?schema=public"
       REDIS_URL: "redis://docmostredis:6379"

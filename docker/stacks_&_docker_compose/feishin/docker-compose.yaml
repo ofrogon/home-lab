@@ -9,10 +9,10 @@ services:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-      SERVER_NAME: jellyfin # pre defined server name
-      SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
-      SERVER_TYPE: jellyfin # navidrome also works
-      SERVER_URL: 'https://jellyfin.local.abeaudoin.xyz'
+      # SERVER_NAME: jellyfin # pre defined server name
+      # SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
+      # SERVER_TYPE: navidrome # jellyfin also works
+      # SERVER_URL: 'https://${TOP_URL:-music}.${BASE_URL:?error}'
       UMASK: 002
     # ports:
     # - 9180:9180

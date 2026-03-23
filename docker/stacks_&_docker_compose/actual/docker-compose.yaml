@@ -21,6 +21,13 @@ services:
       # See all options and more details at https://actualbudget.github.io/docs/Installing/Configuration
     volumes:
       - '/docker/actual/data:/data'
+    healthcheck:
+      # Enable health check for the instance
+      test: ['CMD-SHELL', 'node src/scripts/health-check.js']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     networks:
       - front-end
     labels:

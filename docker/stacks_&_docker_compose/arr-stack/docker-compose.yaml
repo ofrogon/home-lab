@@ -24,11 +24,11 @@ services:
     #   - 6767:6767 # Bazarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_SERVICE_PROVIDER: mullvad #protonvpn
       VPN_TYPE: wireguard
       # Wireguard:
       WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
-      #WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
+      WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
       # Timezone for accurate log times
       TZ: America/Montreal
       # Server list updater
@@ -80,12 +80,6 @@ services:
       - 'traefik.http.routers.lidarr-https.service=lidarr-svc'
       - 'traefik.http.services.lidarr-svc.loadbalancer.server.port=8686'
 
-      - 'traefik.http.routers.readarr-https.rule=Host(`readarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.readarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.readarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.readarr-https.service=readarr-svc'
-      - 'traefik.http.services.readarr-svc.loadbalancer.server.port=8787'
-
       - 'traefik.http.routers.sonarr-https.rule=Host(`sonarr.${BASE_URL:?error}`)'
       - 'traefik.http.routers.sonarr-https.entrypoints=websecure'
       - 'traefik.http.routers.sonarr-https.tls.certresolver=production'
@@ -98,11 +92,11 @@ services:
       - 'traefik.http.routers.prowlarr-https.service=prowlarr-svc'
       - 'traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696'
 
-      - 'traefik.http.routers.huntarr-https.rule=Host(`huntarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.huntarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.huntarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.huntarr-https.service=huntarr-svc'
-      - 'traefik.http.services.huntarr-svc.loadbalancer.server.port=9705'
+      # - 'traefik.http.routers.huntarr-https.rule=Host(`huntarr.${BASE_URL:?error}`)'
+      # - 'traefik.http.routers.huntarr-https.entrypoints=websecure'
+      # - 'traefik.http.routers.huntarr-https.tls.certresolver=production'
+      # - 'traefik.http.routers.huntarr-https.service=huntarr-svc'
+      # - 'traefik.http.services.huntarr-svc.loadbalancer.server.port=9705'
 
       - 'traefik.http.routers.bazarr-https.rule=Host(`bazarr.${BASE_URL:?error}`)'
       - 'traefik.http.routers.bazarr-https.entrypoints=websecure'
@@ -110,11 +104,11 @@ services:
       - 'traefik.http.routers.bazarr-https.service=bazarr-svc'
       - 'traefik.http.services.bazarr-svc.loadbalancer.server.port=6767'
 
-      - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.rdt-https.entrypoints=websecure'
-      - 'traefik.http.routers.rdt-https.tls.certresolver=production'
-      - 'traefik.http.routers.rdt-https.service=rdt-svc'
-      - 'traefik.http.services.rdt-svc.loadbalancer.server.port=6500'
+      # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?error}`)'
+      # - 'traefik.http.routers.rdt-https.entrypoints=websecure'
+      # - 'traefik.http.routers.rdt-https.tls.certresolver=production'
+      # - 'traefik.http.routers.rdt-https.service=rdt-svc'
+      # - 'traefik.http.services.rdt-svc.loadbalancer.server.port=6500'
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
@@ -209,25 +203,6 @@ services:
     labels:
       - 'diun.enable=true'
 
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    restart: unless-stopped
-    environment:
-      TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
-    volumes:
-      - '/docker/arr-stack/readarr/data:/config'
-      - '/download/readarr/books:/books' #optional
-      - '/download/download:/downloads' #optional
-    network_mode: 'service:gluetun'
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    labels:
-      - 'diun.enable=true'
-
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
@@ -283,44 +258,44 @@ services:
     labels:
       - 'diun.enable=true'
 
-  huntarr:
-    image: ghcr.io/plexguide/huntarr:latest
-    container_name: huntarr
-    restart: unless-stopped
-    volumes:
-      - '/docker/arr-stack/huntarr:/config'
-    environment:
-      TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
-    network_mode: 'service:gluetun'
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    labels:
-      - 'diun.enable=true'
+  # huntarr:
+  #   image: ghcr.io/plexguide/huntarr:latest
+  #   container_name: huntarr
+  #   restart: unless-stopped
+  #   volumes:
+  #     - '/docker/arr-stack/huntarr:/config'
+  #   environment:
+  #     TZ: America/Montreal
+  #     PUID: $PUID
+  #     PGID: $PGID
+  #   network_mode: 'service:gluetun'
+  #   depends_on:
+  #     gluetun:
+  #       condition: service_healthy
+  #   labels:
+  #     - 'diun.enable=true'
 
-  rdtclient:
-    image: rogerfar/rdtclient
-    container_name: rdtclient
-    restart: unless-stopped
-    environment:
-      TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
-    volumes:
-      - '/docker/arr-stack/rdtclient:/data/db'
-      - '/download/download:/data/downloads' #optional
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-    network_mode: 'service:gluetun'
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    labels:
-      - 'diun.enable=true'
+  # rdtclient:
+  #   image: rogerfar/rdtclient
+  #   container_name: rdtclient
+  #   restart: unless-stopped
+  #   environment:
+  #     TZ: America/Montreal
+  #     PUID: $PUID
+  #     PGID: $PGID
+  #   volumes:
+  #     - '/docker/arr-stack/rdtclient:/data/db'
+  #     - '/download/download:/data/downloads' #optional
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: 10m
+  #   network_mode: 'service:gluetun'
+  #   depends_on:
+  #     gluetun:
+  #       condition: service_healthy
+  #   labels:
+  #     - 'diun.enable=true'
 
   # overseerr:
   #   image: sctx/overseerr:latest

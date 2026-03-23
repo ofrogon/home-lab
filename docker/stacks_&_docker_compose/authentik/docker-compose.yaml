@@ -24,40 +24,33 @@ services:
     labels:
       - 'diun.enable=true'
 
-  redis:
-    image: docker.io/library/redis:alpine
-    container_name: authentik-redis
-    command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-    environment:
-      TZ: America/Montreal
-    volumes:
-      - 'redis:/data'
-    networks:
-      - back-end
-    labels:
-      - 'diun.enable=true'
-
   server:
-    image: ghcr.io/goauthentik/server:2025.2
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2026.2.1}
     container_name: authentik-server
     restart: unless-stopped
     command: server
+    shm_size: 512mb
     environment:
-      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
-      #Add logs
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
       TZ: America/Montreal
+      # SMTP Host Emails are sent to
+      AUTHENTIK_EMAIL__HOST: ${AUTHENTIK_EMAIL__HOST}
+      AUTHENTIK_EMAIL__PORT: ${AUTHENTIK_EMAIL__PORT}
+      # Optionally authenticate (don't add quotation marks to your password)
+      AUTHENTIK_EMAIL__USERNAME: ${AUTHENTIK_EMAIL__USERNAME}
+      AUTHENTIK_EMAIL__PASSWORD: ${AUTHENTIK_EMAIL__PASSWORD}
+      # Use StartTLS
+      AUTHENTIK_EMAIL__USE_TLS: false
+      # Use SSL
+      AUTHENTIK_EMAIL__USE_SSL: true
+      AUTHENTIK_EMAIL__TIMEOUT: 10
+      # Email address authentik will send from, should have a correct @domain
+      AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM}
     user: $PUID:$PGID
     volumes:
       - '/docker/authentik/media:/media'
@@ -79,28 +72,41 @@ services:
       - 'traefik.http.services.authentik-svc.loadBalancer.server.port=9000'
       - 'traefik.docker.network=front-end'
     depends_on:
-      - postgresql
-      - redis
+      postgresql:
+        condition: service_healthy
     networks:
       - front-end
       - back-end
 
   worker:
-    image: ghcr.io/goauthentik/server:2025.2
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2026.2.1}
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
     environment:
-      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
       #Add logs
       AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_DEBUG_LOG:-false}
       PUID: $PUID
       PGID: $PGID
       TZ: America/Montreal
+      # SMTP Host Emails are sent to
+      AUTHENTIK_EMAIL__HOST: mail.privateemail.com
+      AUTHENTIK_EMAIL__PORT: 465
+      # Optionally authenticate (don't add quotation marks to your password)
+      AUTHENTIK_EMAIL__USERNAME: admin@tek-sdi.com
+      AUTHENTIK_EMAIL__PASSWORD: ${UTHENTIK_EMAIL__PASSWORD}
+      # Use StartTLS
+      AUTHENTIK_EMAIL__USE_TLS: false
+      # Use SSL
+      AUTHENTIK_EMAIL__USE_SSL: true
+      AUTHENTIK_EMAIL__TIMEOUT: 10
+      # Email address authentik will send from, should have a correct @domain
+      AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM}
     user: $PUID:$PGID
     volumes:
       - '/docker/authentik/media:/media'
@@ -109,8 +115,8 @@ services:
     env_file:
       - stack.env
     depends_on:
-      - postgresql
-      - redis
+      postgresql:
+        condition: service_healthy
     networks:
       - back-end
     labels:

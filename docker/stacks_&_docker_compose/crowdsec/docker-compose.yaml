@@ -24,7 +24,7 @@ services:
     container_name: bouncer-traefik
     restart: unless-stopped
     environment:
-      CROWDSEC_BOUNCER_API_KEY: create_a_random_api_key
+      CROWDSEC_BOUNCER_API_KEY: $CROWDSEC_BOUNCER_API_KEY
       CROWDSEC_AGENT_HOST: crowdsec:8080
     networks:
       - front-end

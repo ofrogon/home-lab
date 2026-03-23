@@ -6,7 +6,7 @@ services:
     restart: always
     command: tunnel run
     environment:
-      TUNNEL_TOKEN: $TUNNEL_TOKEN
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?tunnel token required}
     networks:
       - public
     labels:
