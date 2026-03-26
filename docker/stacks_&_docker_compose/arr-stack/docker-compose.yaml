@@ -320,17 +320,17 @@ services:
   #     - "traefik.http.routers.overseerr-https.service=overseerr-svc"
   #     - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
 
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+  seer:
+    image: ghcr.io/seerr-team/seerr:latest
     restart: unless-stopped
-    container_name: jellyseerr
+    container_name: seer
     environment:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
       PORT: 5055
     volumes:
-      - "/docker/arr-stack/jellyseerr/data:/app/config"
+      - "/docker/arr-stack/seer/data:/app/config"
     networks:
       - front-end
     labels:
@@ -338,17 +338,18 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=front-end"
 
-      - "traefik.http.routers.jellyseerr-https.rule=Host(`jellyseerr.${BASE_URL:?error}`)"
-      - "traefik.http.routers.jellyseerr-https.entrypoints=websecure"
-      - "traefik.http.routers.jellyseerr-https.tls.certresolver=production"
-      - "traefik.http.routers.jellyseerr-https.service=jellyseerr-svc"
-      - "traefik.http.services.jellyseerr-svc.loadbalancer.server.port=5055"
+      - "traefik.http.routers.seer-https.rule=Host(`seer.${BASE_URL:?error}`)"
+      - "traefik.http.routers.seer-https.entrypoints=websecure"
+      - "traefik.http.routers.seer-https.tls.certresolver=production"
+      - "traefik.http.routers.seer-https.service=seer-svc"
+      - "traefik.http.services.seer-svc.loadbalancer.server.port=5055"
       # External magic
-      - 'traefik.http.routers.jellyseerr-https-public.entrypoints=websecure-public'
-      - 'traefik.http.routers.jellyseerr-https-public.rule=Host(`jellyseerr.${PUBLIC_URL:?error}`)'
-      - 'traefik.http.routers.jellyseerr-https-public.tls=true'
-      - 'traefik.http.routers.jellyseerr-https-public.tls.certresolver=production'
-      - 'traefik.http.routers.jellyseerr-https-public.service=jellyseerr-svc'
+      - 'traefik.http.routers.seer-https-public.entrypoints=websecure-public'
+      - 'traefik.http.routers.seer-https-public.rule=Host(`seer.${PUBLIC_URL:?error}`)'
+      - 'traefik.http.routers.seer-https-public.tls=true'
+      - 'traefik.http.routers.seer-https-public.tls.certresolver=production'
+      - 'traefik.http.routers.seer-https-public.service=seer-svc'
+
 networks:
   front-end:
     external: true
