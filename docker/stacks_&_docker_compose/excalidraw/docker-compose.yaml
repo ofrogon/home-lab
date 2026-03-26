@@ -1,5 +1,4 @@
 ---
-
 services:
   excalidraw:
     image: excalidraw/excalidraw
@@ -25,7 +24,7 @@ services:
       - "traefik.docker.network=front-end"
       # External magic
       - "traefik.http.routers.excalidraw-https-public.entrypoints=websecure-public"
-      - "traefik.http.routers.excalidraw-https-public.rule=Host(`draw.abeaudoin.xyz`)"
+      - "traefik.http.routers.excalidraw-https-public.rule=Host(`${TOP_URL:-draw}.${PUBLIC_URL:?error}`)"
       - "traefik.http.routers.excalidraw-https-public.tls=true"
       - "traefik.http.routers.excalidraw-https-public.tls.certresolver=production"
       - "traefik.http.routers.excalidraw-https-public.service=excalidraw-svc"

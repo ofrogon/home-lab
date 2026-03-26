@@ -1,5 +1,4 @@
 ---
-
 services:
   teamspeak:
     image: teamspeak
@@ -22,7 +21,7 @@ services:
       - front-end
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   teamspeak-db:
     image: mariadb

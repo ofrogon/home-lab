@@ -5,8 +5,8 @@ services:
     container_name: crowdsec
     restart: unless-stopped
     environment:
-      GID: '${GID-1000}'
-      COLLECTIONS: 'crowdsecurity/linux crowdsecurity/traefik'
+      GID: "${GID-1000}"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
       - /docker/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /docker/crowdsec/db:/var/lib/crowdsec/data/
@@ -17,7 +17,7 @@ services:
     security_opt:
       - no-new-privileges:true
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   bouncer-traefik:
     image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
@@ -33,7 +33,7 @@ services:
     security_opt:
       - no-new-privileges:true
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 networks:
   front-end:

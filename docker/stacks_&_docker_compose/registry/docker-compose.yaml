@@ -1,5 +1,4 @@
 ---
-
 services:
   registry:
     image: registry:latest
@@ -16,12 +15,12 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.registry-http.entrypoints=web"
-      - 'traefik.http.routers.registry-http.rule=Host(`${TOP_URL:-registry}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.registry-http.rule=Host(`${TOP_URL:-registry}.${BASE_URL:?error}`)"
       - "traefik.http.routers.registry-https.entrypoints=websecure"
-      - 'traefik.http.routers.registry-https.rule=Host(`${TOP_URL:-registry}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.registry-https.rule=Host(`${TOP_URL:-registry}.${BASE_URL:?error}`)"
       - "traefik.http.routers.registry-https.tls=true"
       - "traefik.http.routers.registry-https.tls.certresolver=production"
       - "traefik.http.routers.registry-https.service=registry-svc"

@@ -1,5 +1,4 @@
 ---
-
 services:
   navidrome:
     image: deluan/navidrome:latest
@@ -10,9 +9,10 @@ services:
     #  - "4533:4533"
     environment:
       ND_SCANSCHEDULE: 1h
-      ND_LOGLEVEL: info  
-      ND_SESSIONTIMEOUT: 24h
-      ND_BASEURL: ""
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 96h
+      ND_SHAREURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?error}"
+      ND_BASEURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?error}"
       ND_SPOTIFY_ID: $ND_SPOTIFY_ID
       ND_SPOTIFY_SECRET: $ND_SPOTIFY_SECRET
       ND_LASTFM_APIKEY: $ND_LASTFM_APIKEY
@@ -24,17 +24,23 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.music-http.entrypoints=web"
-      - 'traefik.http.routers.music-http.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.music-http.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)"
       - "traefik.http.routers.music-https.entrypoints=websecure"
-      - 'traefik.http.routers.music-https.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.music-https.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)"
       - "traefik.http.routers.music-https.tls=true"
       - "traefik.http.routers.music-https.tls.certresolver=production"
       - "traefik.http.routers.music-https.service=music-svc"
       - "traefik.http.services.music-svc.loadBalancer.server.port=4533"
       - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.music-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.music-https-public.rule=Host(`${TOP_URL:-music}.${PUBLIC_URL:?error}`)"
+      - "traefik.http.routers.music-https-public.tls=true"
+      - "traefik.http.routers.music-https-public.tls.certresolver=production"
+      - "traefik.http.routers.music-https-public.service=music-svc"
 
 networks:
   front-end:

@@ -1,5 +1,4 @@
 ---
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -22,23 +21,36 @@ services:
       - "/docker/linkwarden/data:/data/data"
     depends_on:
       - postgres
+      - meilisearch
     env_file:
       - stack.env
     networks:
       - front-end
       - linkwarden
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.linkwarden-http.entrypoints=web"
-      - 'traefik.http.routers.linkwarden-http.rule=Host(`${TOP_URL:-linkwarden}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.linkwarden-http.rule=Host(`${TOP_URL:-linkwarden}.${BASE_URL:?error}`)"
       - "traefik.http.routers.linkwarden-https.entrypoints=websecure"
-      - 'traefik.http.routers.linkwarden-https.rule=Host(`${TOP_URL:-linkwarden}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.linkwarden-https.rule=Host(`${TOP_URL:-linkwarden}.${BASE_URL:?error}`)"
       - "traefik.http.routers.linkwarden-https.tls=true"
       - "traefik.http.routers.linkwarden-https.tls.certresolver=production"
       - "traefik.http.routers.linkwarden-https.service=linkwarden-svc"
       - "traefik.http.services.linkwarden-svc.loadBalancer.server.port=3000"
       - "traefik.docker.network=front-end"
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.8
+    restart: always
+    env_file:
+      - stack.env
+    volumes:
+      - "/docker/linkwarden/meili_data:/meili_data"
+    networks:
+      - linkwarden
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:

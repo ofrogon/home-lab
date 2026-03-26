@@ -1,0 +1,36 @@
+---
+services:
+  superproductivity:
+    image: johannesjo/super-productivity:latest
+    container_name: superproductivity
+    restart: unless-stopped
+    user: "${PUID}:${PGID}" # should be owner of volumes
+    #ports:
+    #  - "80:80"
+    environment:
+      # Optional: put your config options customization here. Examples:
+      TZ: America/Montreal
+    networks:
+      - front-end
+    labels:
+      - "diun.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.sp-http.entrypoints=web"
+      - "traefik.http.routers.sp-http.rule=Host(`${TOP_URL:-sp}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.sp-https.entrypoints=websecure"
+      - "traefik.http.routers.sp-https.rule=Host(`${TOP_URL:-sp}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.sp-https.tls=true"
+      - "traefik.http.routers.sp-https.tls.certresolver=production"
+      - "traefik.http.routers.sp-https.service=sp-svc"
+      - "traefik.http.services.sp-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.sp-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.sp-https-public.rule=Host(`${TOP_URL:-sp}.${PUBLIC_URL:?error}`)"
+      - "traefik.http.routers.sp-https-public.tls=true"
+      - "traefik.http.routers.sp-https-public.tls.certresolver=production"
+      - "traefik.http.routers.sp-https-public.service=sp-svc"
+
+networks:
+  front-end:
+    external: true

@@ -1,5 +1,4 @@
 ---
-
 services:
   logseq:
     image: ghcr.io/logseq/logseq-webapp:latest
@@ -12,10 +11,10 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.logseq-https.entrypoints=websecure"
-      - 'traefik.http.routers.logseq-http.rule=Host(`${TOP_URL:-logseq}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.logseq-http.rule=Host(`${TOP_URL:-logseq}.${BASE_URL:?error}`)"
       - "traefik.http.routers.logseq-https.tls=true"
       - "traefik.http.routers.logseq-https.tls.certresolver=production"
       - "traefik.http.routers.logseq-https.service=logseq-svc"

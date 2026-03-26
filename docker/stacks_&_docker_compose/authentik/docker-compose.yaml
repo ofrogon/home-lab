@@ -5,7 +5,7 @@ services:
     container_name: authentik-postgresdql
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
       interval: 30s
       retries: 5
@@ -16,13 +16,33 @@ services:
       POSTGRES_DB: ${PG_DB:-authentik}
       TZ: America/Montreal
     volumes:
-      - 'database:/var/lib/postgresql/data'
+      - "database:/var/lib/postgresql/data"
     env_file:
       - stack.env
     networks:
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
+
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: authentik-redis
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - "redis:/data"
+    networks:
+      - back-end
+    labels:
+      - "diun.enable=true"
 
   server:
     image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2026.2.1}
@@ -31,6 +51,7 @@ services:
     command: server
     shm_size: 512mb
     environment:
+      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
@@ -51,28 +72,29 @@ services:
       AUTHENTIK_EMAIL__TIMEOUT: 10
       # Email address authentik will send from, should have a correct @domain
       AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM}
-    user: $PUID:$PGID
     volumes:
-      - '/docker/authentik/media:/media'
-      - '/docker/authentik/custom-templates:/templates'
+      - "/docker/authentik/media:/media"
+      - "/docker/authentik/custom-templates:/templates"
     env_file:
       - stack.env
     labels:
-      - 'diun.enable=true'
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.authentik-http.entrypoints=web'
-      - 'traefik.http.routers.authentik-http.rule=Host(`${TOP_URL:-auth}.${BASE_URL:?base url required}`)'
-      - 'traefik.http.middlewares.auth-http-redirect.redirectscheme.scheme=https'
-      - 'traefik.http.routers.authentik-http.middlewares=auth-http-redirect'
-      - 'traefik.http.routers.authentik-https.entrypoints=websecure'
-      - 'traefik.http.routers.authentik-https.rule=Host(`${TOP_URL:-auth}.${BASE_URL:?base url required}`)'
-      - 'traefik.http.routers.authentik-https.tls=true'
-      - 'traefik.http.routers.authentik-https.tls.certresolver=production'
-      - 'traefik.http.routers.authentik-https.service=authentik-svc'
-      - 'traefik.http.services.authentik-svc.loadBalancer.server.port=9000'
-      - 'traefik.docker.network=front-end'
+      - "diun.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.authentik-http.entrypoints=web"
+      - "traefik.http.routers.authentik-http.rule=Host(`${TOP_URL:-auth}.${BASE_URL:?base url required}`)"
+      - "traefik.http.middlewares.auth-http-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.authentik-http.middlewares=auth-http-redirect"
+      - "traefik.http.routers.authentik-https.entrypoints=websecure"
+      - "traefik.http.routers.authentik-https.rule=Host(`${TOP_URL:-auth}.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.authentik-https.tls=true"
+      - "traefik.http.routers.authentik-https.tls.certresolver=production"
+      - "traefik.http.routers.authentik-https.service=authentik-svc"
+      - "traefik.http.services.authentik-svc.loadBalancer.server.port=9000"
+      - "traefik.docker.network=front-end"
     depends_on:
       postgresql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - front-end
@@ -84,6 +106,7 @@ services:
     restart: unless-stopped
     command: worker
     environment:
+      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
@@ -107,20 +130,21 @@ services:
       AUTHENTIK_EMAIL__TIMEOUT: 10
       # Email address authentik will send from, should have a correct @domain
       AUTHENTIK_EMAIL__FROM: ${AUTHENTIK_EMAIL__FROM}
-    user: $PUID:$PGID
     volumes:
-      - '/docker/authentik/media:/media'
-      - '/docker/authentik/certs:/certs'
-      - '/docker/authentik/custom-templates:/templates'
+      - "/docker/authentik/media:/media"
+      - "/docker/authentik/certs:/certs"
+      - "/docker/authentik/custom-templates:/templates"
     env_file:
       - stack.env
     depends_on:
       postgresql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 volumes:
   database:

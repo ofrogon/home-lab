@@ -1,17 +1,16 @@
 ---
-
 services:
   vikunja:
     image: vikunja/vikunja
     container_name: vikunja
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      # PUID: $PUID
+      # PGID: $PGID
       VIKUNJA_SERVICE_PUBLICURL: $VIKUNJA_SERVICE_PUBLICURL
-      VIKUNJA_DATABASE_HOST: vinkunjasql
+      VIKUNJA_DATABASE_HOST: vikunjasql
       VIKUNJA_DATABASE_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
-      VIKUNJA_DATABASE_TYPE: mysql
+      VIKUNJA_DATABASE_TYPE: postgres
       VIKUNJA_DATABASE_USER: $VIKUNJA_DATABASE_USER
       VIKUNJA_DATABASE_DATABASE: vikunja
       VIKUNJA_SERVICE_JWTSECRET: ${VIKUNJA_SERVICE_JWTSECRET}
@@ -26,59 +25,57 @@ services:
       VIKUNJA_MAILER_USERNAME: ${VIKUNJA_MAILER_USERNAME}
       VIKUNJA_MAILER_PASSWORD: ${VIKUNJA_MAILER_PASSWORD}
       VIKUNJA_MAILER_FORCESSL: true
-      # There is something strange with the OPENID confir, try againt on next build >0.24.6
- #     VIKUNJA_AUTH_OPENID_ENABLED: true
-      VIKUNJA_AUTH_OPENID_PROVIDERS: 'AUTHENTIk'
+      VIKUNJA_AUTH_OPENID_ENABLED: true
+      VIKUNJA_AUTH_OPENID_PROVIDERS: "AUTHENTIk"
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_NAME: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_NAME}
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_AUTHURL: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_AUTHURL}
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTID: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTID}
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTSECRET: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_CLIENTSECRET}
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL}
+      VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIK_SCOPE: "openid email profile"
       VIKUNJA_AUTH_LOCAL_ENABLED: true
-#    ports:
-#      - 3456:3456
+    #    ports:
+    #      - 3456:3456
     volumes:
       - /docker/vikunja/files:/app/vikunja/files
+      - /docker/vikunja/config.yml:/etc/vikunja/config.yml
     restart: unless-stopped
     depends_on:
-      vinkunjasql:
+      vikunjasql:
         condition: service_healthy
     networks:
       - front-end
       - back-end
+    dns:
+      - 192.168.99.7
+      - 192.168.99.8
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.todo-https.entrypoints=websecure"
-      - 'traefik.http.routers.todo-https.rule=Host(`${TOP_URL:-todo}.${BASE_URL:?error}`)'
-      - "traefik.http.routers.todo-https.tls=true"
-      - "traefik.http.routers.todo-https.tls.certresolver=production"
-      - "traefik.http.routers.todo-https.service=todo-svc"
-      - "traefik.http.services.todo-svc.loadBalancer.server.port=3456"
+      - "traefik.http.routers.vikunja-https.entrypoints=websecure"
+      - "traefik.http.routers.vikunja-https.rule=Host(`${TOP_URL:-todo}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.vikunja-https.tls=true"
+      - "traefik.http.routers.vikunja-https.tls.certresolver=production"
+      - "traefik.http.routers.vikunja-https.service=vikunja-svc"
+      - "traefik.http.services.vikunja-svc.loadBalancer.server.port=3456"
       - "traefik.docker.network=front-end"
-      
-  vinkunjasql:
-    image: mariadb:10
-    container_name: vinkunja-sql
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  vikunjasql:
+    image: postgres:18
     environment:
-      PUID: $PUID
-      PGID: $PGID
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: vikunja
-      MYSQL_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
-      MYSQL_DATABASE: $VIKUNJA_DATABASE_USER
+      POSTGRES_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
+      POSTGRES_USER: vikunja
     volumes:
-      - /docker/vikunja/db:/var/lib/postgresql/data
+      - /docker/vikunja/db:/var/lib/postgresql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER"]
       interval: 2s
       start_period: 30s
     networks:
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 networks:
   front-end:

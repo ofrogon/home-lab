@@ -1,5 +1,4 @@
 ---
-
 services:
   docmost:
     image: docmost/docmost:latest
@@ -22,10 +21,10 @@ services:
       - front-end
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.docmost-https.entrypoints=websecure"
-      - 'traefik.http.routers.docmost-https.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.docmost-https.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?error}`)"
       - "traefik.http.routers.docmost-https.tls=true"
       - "traefik.http.routers.docmost-https.tls.certresolver=production"
       - "traefik.http.routers.docmost-https.service=docmost-svc"
@@ -44,6 +43,8 @@ services:
       - /docker/docmost/db:/var/lib/postgresql/data
     networks:
       - back-end
+    labels:
+      - "diun.enable=true"
 
   docmostredis:
     image: redis:7.2-alpine

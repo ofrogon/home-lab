@@ -1,8 +1,7 @@
 ---
-
 services:
   web:
-    image: ghcr.io/hoarder-app/hoarder:${HOARDER_VERSION:-release}
+    image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     container_name: hoarder
@@ -24,10 +23,10 @@ services:
       - front-end
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.hoarder-https.entrypoints=websecure"
-      - 'traefik.http.routers.hoarder-https.rule=Host(`${TOP_URL:-hoarder}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.hoarder-https.rule=Host(`${TOP_URL:-karakeep}.${BASE_URL:?error}`)"
       - "traefik.http.routers.hoarder-https.tls=true"
       - "traefik.http.routers.hoarder-https.tls.certresolver=production"
       - "traefik.http.routers.hoarder-https.service=hoarder-svc"
@@ -35,7 +34,7 @@ services:
       - "traefik.docker.network=front-end"
 
   chrome:
-    image: gcr.io/zenika-hub/alpine-chrome:123
+    image: gcr.io/zenika-hub/alpine-chrome:124
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     container_name: hoarder-chrome
@@ -53,10 +52,10 @@ services:
     networks:
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   meilisearch:
-    image: getmeili/meilisearch:v1.6
+    image: getmeili/meilisearch:v1.37.0
     restart: unless-stopped
     user: "${PUID}:${PGID}"
     container_name: hoarder-meilisearch
@@ -72,7 +71,7 @@ services:
     networks:
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 volumes:
   meilisearch:

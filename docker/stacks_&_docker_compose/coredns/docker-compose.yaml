@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
     command: -conf /etc/coredns/Corefile -dns.port 53
     ports:
-      - '53:53'
-      - '53:53/udp'
+      - "53:53"
+      - "53:53/udp"
     volumes:
-      - '/docker/coredns:/etc/coredns'
+      - "/docker/coredns:/etc/coredns"
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"

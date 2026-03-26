@@ -1,15 +1,14 @@
 ---
-
 services:
   feishin:
-    image: 'ghcr.io/jeffvli/feishin:latest'
+    image: "ghcr.io/jeffvli/feishin:latest"
     container_name: feishin
     restart: unless-stopped
     environment:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-      # SERVER_NAME: jellyfin # pre defined server name
+      # SERVER_NAME: navidrome # pre defined server name
       # SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
       # SERVER_TYPE: navidrome # jellyfin also works
       # SERVER_URL: 'https://${TOP_URL:-music}.${BASE_URL:?error}'
@@ -17,21 +16,27 @@ services:
     # ports:
     # - 9180:9180
     env_file:
-    - stack.env
+      - stack.env
     networks:
-    - front-end
+      - front-end
     labels:
-    - "diun.enable=true"
-    - "traefik.enable=true"
-    - "traefik.http.routers.feishin-http.entrypoints=web"
-    - "traefik.http.routers.feishin-http.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error}`)"
-    - "traefik.http.routers.feishin-https.entrypoints=websecure"
-    - "traefik.http.routers.feishin-https.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error}`)"
-    - "traefik.http.routers.feishin-https.tls=true"
-    - "traefik.http.routers.feishin-https.tls.certresolver=production"
-    - "traefik.http.routers.feishin-https.service=feishin-svc"
-    - "traefik.http.services.feishin-svc.loadBalancer.server.port=9180"
-    - "traefik.docker.network=front-end"
+      - "diun.enable=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.feishin-http.entrypoints=web"
+      - "traefik.http.routers.feishin-http.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error missing BASE_URL}`)"
+      - "traefik.http.routers.feishin-https.entrypoints=websecure"
+      - "traefik.http.routers.feishin-https.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error missing BASE_URL}`)"
+      - "traefik.http.routers.feishin-https.tls=true"
+      - "traefik.http.routers.feishin-https.tls.certresolver=production"
+      - "traefik.http.routers.feishin-https.service=feishin-svc"
+      - "traefik.http.services.feishin-svc.loadBalancer.server.port=9180"
+      - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.feishin-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.feishin-https-public.rule=Host(`${TOP_URL:-player}.${PUBLIC_URL:?error missing PUBLIC_URL}`)"
+      - "traefik.http.routers.feishin-https-public.tls=true"
+      - "traefik.http.routers.feishin-https-public.tls.certresolver=production"
+      - "traefik.http.routers.feishin-https-public.service=feishin-svc"
 
 networks:
   front-end:

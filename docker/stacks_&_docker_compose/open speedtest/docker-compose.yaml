@@ -1,5 +1,4 @@
 ---
-
 services:
   speedtest:
     image: openspeedtest/latest
@@ -16,12 +15,12 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.openspeedtest-http.entrypoints=web"
-      - 'traefik.http.routers.openspeedtest-http.rule=Host(`${TOP_URL:-openspeedtest}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.openspeedtest-http.rule=Host(`${TOP_URL:-openspeedtest}.${BASE_URL:?error}`)"
       - "traefik.http.routers.openspeedtest-https.entrypoints=websecure"
-      - 'traefik.http.routers.openspeedtest-https.rule=Host(`${TOP_URL:-openspeedtest}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.openspeedtest-https.rule=Host(`${TOP_URL:-openspeedtest}.${BASE_URL:?error}`)"
       - "traefik.http.routers.openspeedtest-https.tls=true"
       - "traefik.http.routers.openspeedtest-https.tls.certresolver=production"
       - "traefik.http.routers.openspeedtest-https.service=openspeedtest-svc"

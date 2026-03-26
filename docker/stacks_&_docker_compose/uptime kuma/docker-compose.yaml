@@ -1,5 +1,4 @@
 ---
-
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:2
@@ -23,9 +22,9 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.uptime-kuma-http.entrypoints=web"
-      - 'traefik.http.routers.uptime-kuma-http.rule=Host(`${TOP_URL:-uptime}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.uptime-kuma-http.rule=Host(`${TOP_URL:-uptime}.${BASE_URL:?error}`)"
       - "traefik.http.routers.uptime-kuma-https.entrypoints=websecure"
-      - 'traefik.http.routers.uptime-kuma-https.rule=Host(`${TOP_URL:-uptime}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.uptime-kuma-https.rule=Host(`${TOP_URL:-uptime}.${BASE_URL:?error}`)"
       - "traefik.http.routers.uptime-kuma-https.tls=true"
       - "traefik.http.routers.uptime-kuma-https.tls.certresolver=production"
       - "traefik.http.routers.uptime-kuma-https.service=uptime-kuma-svc"

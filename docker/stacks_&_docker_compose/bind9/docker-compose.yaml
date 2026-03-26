@@ -5,8 +5,8 @@ services:
     container_name: bind9
     restart: unless-stopped
     ports:
-      - '53:53/udp'
-      - '53:53/tcp'
+      - "53:53/udp"
+      - "53:53/tcp"
     volumes:
       - /docker/bind9/config:/etc/bind
       - /docker/bind9/cache:/var/cache/bind
@@ -15,4 +15,4 @@ services:
       TZ: America/Montreal
       BIND9_USER: root
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"

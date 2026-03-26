@@ -1,5 +1,4 @@
 ---
-
 services:
   gotify:
     image: gotify/server
@@ -18,12 +17,12 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.gotify-http.entrypoints=web"
-      - "traefik.http.routers.gotify-http.rule=Host(`gotify.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gotify-http.rule=Host(`${TOP_URL:-gotify}.${BASE_URL:?error}`)"
       - "traefik.http.routers.gotify-https.entrypoints=websecure"
-      - "traefik.http.routers.gotify-https.rule=Host(`gotify.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gotify-https.rule=Host(`${TOP_URL:-gotify}.${BASE_URL:?error}`)"
       - "traefik.http.routers.gotify-https.tls=true"
       - "traefik.http.routers.gotify-https.tls.certresolver=production"
       - "traefik.http.routers.gotify-https.service=gotify-svc"

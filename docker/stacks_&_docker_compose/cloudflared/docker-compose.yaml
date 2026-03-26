@@ -10,7 +10,7 @@ services:
     networks:
       - public
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 networks:
   public:

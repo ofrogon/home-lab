@@ -1,20 +1,21 @@
 ---
-
 services:
-  redis:
-    container_name: redis
-    image: docker.io/valkey/valkey:8-alpine
-    command: valkey-server --save 30 1 --loglevel warning
-    restart: unless-stopped
-    networks:
-      - back-end
-    volumes:
-      - valkey-data2:/data
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-        max-file: "1"
+  # redis:
+  #   container_name: redis
+  #   image: docker.io/valkey/valkey:8-alpine
+  #   command: valkey-server --save 30 1 --loglevel warning
+  #   restart: unless-stopped
+  #   networks:
+  #     - back-end
+  #   volumes:
+  #     - valkey-data2:/data
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "1"
+  #   labels:
+  #     - "diun.enable=true"
 
   searxng:
     container_name: searxng
@@ -31,23 +32,32 @@ services:
       SEARXNG_BASE_URL: https://${SEARXNG_HOSTNAME:-localhost}/
       UWSGI_WORKERS: ${SEARXNG_UWSGI_WORKERS:-4}
       UWSGI_THREADS: ${SEARXNG_UWSGI_THREADS:-4}
+      SEARXNG_IMAGE_PROXY: true
+      SEARXNG_STATIC_USE_HASH: true
+      # SEARXNG_REDIS_URL: "redis://redis:6379/0"
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
         max-file: "1"
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.search-http.entrypoints=web"
-      - 'traefik.http.routers.search-http.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.search-http.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)"
       - "traefik.http.routers.search-https.entrypoints=websecure"
-      - 'traefik.http.routers.search-https.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.search-https.rule=Host(`${TOP_URL:-search}.${BASE_URL:?error}`)"
       - "traefik.http.routers.search-https.tls=true"
       - "traefik.http.routers.search-https.tls.certresolver=production"
       - "traefik.http.routers.search-https.service=search-svc"
       - "traefik.http.services.search-svc.loadBalancer.server.port=8080"
       - "traefik.docker.network=front-end"
+      # External magic
+      - "traefik.http.routers.search-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.search-https-public.rule=Host(`${TOP_URL:-search}.${PUBLIC_URL:?error}`)"
+      - "traefik.http.routers.search-https-public.tls=true"
+      - "traefik.http.routers.search-https-public.tls.certresolver=production"
+      - "traefik.http.routers.search-https-public.service=search-svc"
 
 networks:
   front-end:

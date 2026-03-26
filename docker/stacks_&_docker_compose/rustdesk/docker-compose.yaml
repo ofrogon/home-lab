@@ -10,7 +10,7 @@ services:
     depends_on:
       - hbbr
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   hbbr:
     image: rustdesk/rustdesk-server:latest
@@ -21,4 +21,4 @@ services:
       - /docker/rustdesk/hhbr:/root
     network_mode: "host"
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"

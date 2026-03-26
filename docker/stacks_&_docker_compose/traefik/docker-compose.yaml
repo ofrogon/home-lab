@@ -1,5 +1,4 @@
 ---
-
 secrets:
   cloudflare_dns_api_token:
     file: /secrets/cloudflare_dns_api_token.txt
@@ -27,12 +26,13 @@ services:
       - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
       - "/docker/traefik/conf/:/etc/traefik/conf/"
       - "/docker/traefik/certs/:/etc/traefik/certs/"
+      - "/docker/traefik/logs/:/var/log/traefik/"
     networks:
       - front-end
     env_file:
       - stack.env
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 networks:
   front-end:

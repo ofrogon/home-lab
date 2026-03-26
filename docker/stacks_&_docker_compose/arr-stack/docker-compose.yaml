@@ -7,7 +7,7 @@ services:
     cap_add:
       - NET_ADMIN
     devices:
-      - '/dev/net/tun:/dev/net/tun'
+      - "/dev/net/tun:/dev/net/tun"
     # ports:
     #   - 8000:8000/tcp # Gluetun web server
     #   - 8388:8388/tcp # Shadowsocks
@@ -37,7 +37,7 @@ services:
       SERVER_COUNTRIES: $SERVER_COUNTRIES
       # FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
-      - '/docker/arr-stack/gluetun:/gluetun'
+      - "/docker/arr-stack/gluetun:/gluetun"
     networks:
       - front-end
     healthcheck:
@@ -46,51 +46,51 @@ services:
       timeout: 10s
       retries: 3
     labels:
-      - 'diun.enable=true'
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=front-end'
+      - "diun.enable=true"
+      - "traefik.enable=true"
+      - "traefik.docker.network=front-end"
 
-      - 'traefik.http.routers.gluetun-https.rule=Host(`gluetun.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.gluetun-https.entrypoints=websecure'
-      - 'traefik.http.routers.gluetun-https.tls.certresolver=production'
-      - 'traefik.http.routers.gluetun-https.service=gluetun-svc'
-      - 'traefik.http.services.gluetun-svc.loadbalancer.server.port=8000'
+      - "traefik.http.routers.gluetun-https.rule=Host(`gluetun.${BASE_URL:?error}`)"
+      - "traefik.http.routers.gluetun-https.entrypoints=websecure"
+      - "traefik.http.routers.gluetun-https.tls.certresolver=production"
+      - "traefik.http.routers.gluetun-https.service=gluetun-svc"
+      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8000"
 
-      - 'traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.qbittorrent-https.entrypoints=websecure'
-      - 'traefik.http.routers.qbittorrent-https.tls.certresolver=production'
-      - 'traefik.http.routers.qbittorrent-https.service=qbittorrent-svc'
-      - 'traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085'
+      - "traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.${BASE_URL:?error}`)"
+      - "traefik.http.routers.qbittorrent-https.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent-https.tls.certresolver=production"
+      - "traefik.http.routers.qbittorrent-https.service=qbittorrent-svc"
+      - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085"
 
-      - 'traefik.http.routers.jackett-https.rule=Host(`jackett.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.jackett-https.entrypoints=websecure'
-      - 'traefik.http.routers.jackett-https.tls.certresolver=production'
-      - 'traefik.http.routers.jackett-https.service=jackett-svc'
-      - 'traefik.http.services.jackett-svc.loadbalancer.server.port=9117'
+      - "traefik.http.routers.jackett-https.rule=Host(`jackett.${BASE_URL:?error}`)"
+      - "traefik.http.routers.jackett-https.entrypoints=websecure"
+      - "traefik.http.routers.jackett-https.tls.certresolver=production"
+      - "traefik.http.routers.jackett-https.service=jackett-svc"
+      - "traefik.http.services.jackett-svc.loadbalancer.server.port=9117"
 
-      - 'traefik.http.routers.radarr-https.rule=Host(`radarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.radarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.radarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.radarr-https.service=radarr-svc'
-      - 'traefik.http.services.radarr-svc.loadbalancer.server.port=7878'
+      - "traefik.http.routers.radarr-https.rule=Host(`radarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.radarr-https.entrypoints=websecure"
+      - "traefik.http.routers.radarr-https.tls.certresolver=production"
+      - "traefik.http.routers.radarr-https.service=radarr-svc"
+      - "traefik.http.services.radarr-svc.loadbalancer.server.port=7878"
 
-      - 'traefik.http.routers.lidarr-https.rule=Host(`lidarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.lidarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.lidarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.lidarr-https.service=lidarr-svc'
-      - 'traefik.http.services.lidarr-svc.loadbalancer.server.port=8686'
+      - "traefik.http.routers.lidarr-https.rule=Host(`lidarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.lidarr-https.entrypoints=websecure"
+      - "traefik.http.routers.lidarr-https.tls.certresolver=production"
+      - "traefik.http.routers.lidarr-https.service=lidarr-svc"
+      - "traefik.http.services.lidarr-svc.loadbalancer.server.port=8686"
 
-      - 'traefik.http.routers.sonarr-https.rule=Host(`sonarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.sonarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.sonarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.sonarr-https.service=sonarr-svc'
-      - 'traefik.http.services.sonarr-svc.loadbalancer.server.port=8989'
+      - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.sonarr-https.entrypoints=websecure"
+      - "traefik.http.routers.sonarr-https.tls.certresolver=production"
+      - "traefik.http.routers.sonarr-https.service=sonarr-svc"
+      - "traefik.http.services.sonarr-svc.loadbalancer.server.port=8989"
 
-      - 'traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.prowlarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.prowlarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.prowlarr-https.service=prowlarr-svc'
-      - 'traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696'
+      - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.prowlarr-https.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr-https.tls.certresolver=production"
+      - "traefik.http.routers.prowlarr-https.service=prowlarr-svc"
+      - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
 
       # - 'traefik.http.routers.huntarr-https.rule=Host(`huntarr.${BASE_URL:?error}`)'
       # - 'traefik.http.routers.huntarr-https.entrypoints=websecure'
@@ -98,11 +98,11 @@ services:
       # - 'traefik.http.routers.huntarr-https.service=huntarr-svc'
       # - 'traefik.http.services.huntarr-svc.loadbalancer.server.port=9705'
 
-      - 'traefik.http.routers.bazarr-https.rule=Host(`bazarr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.bazarr-https.entrypoints=websecure'
-      - 'traefik.http.routers.bazarr-https.tls.certresolver=production'
-      - 'traefik.http.routers.bazarr-https.service=bazarr-svc'
-      - 'traefik.http.services.bazarr-svc.loadbalancer.server.port=6767'
+      - "traefik.http.routers.bazarr-https.rule=Host(`bazarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.bazarr-https.entrypoints=websecure"
+      - "traefik.http.routers.bazarr-https.tls.certresolver=production"
+      - "traefik.http.routers.bazarr-https.service=bazarr-svc"
+      - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
 
       # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?error}`)'
       # - 'traefik.http.routers.rdt-https.entrypoints=websecure'
@@ -120,14 +120,14 @@ services:
       PGID: $PGID
       WEBUI_PORT: 8085
     volumes:
-      - '/docker/arr-stack/qbittorrent:/config'
-      - '/download/download:/downloads'
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/qbittorrent:/config"
+      - "/download/download:/downloads"
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   jackett:
     image: lscr.io/linuxserver/jackett:latest
@@ -140,14 +140,14 @@ services:
       AUTO_UPDATE: true #optional
       #RUN_OPTS:  #optional
     volumes:
-      - '/docker/arr-stack/jackett/data:/config'
-      - '/download/download:/downloads'
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/jackett/data:/config"
+      - "/download/download:/downloads"
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -158,12 +158,12 @@ services:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-    network_mode: 'service:gluetun'
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -174,15 +174,15 @@ services:
       PUID: $PUID
       PGID: $PGID
     volumes:
-      - '/docker/arr-stack/radarr/data:/config'
-      - '/download/radarr/movies:/movies' #optional
-      - '/download/download:/downloads' #optional
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/radarr/data:/config"
+      - "/download/radarr/movies:/movies" #optional
+      - "/download/download:/downloads" #optional
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
@@ -193,15 +193,15 @@ services:
       PUID: $PUID
       PGID: $PGID
     volumes:
-      - '/docker/arr-stack/lidarr/data:/config'
-      - '/download/lidarr/music:/music' #optional
-      - '/download/download:/downloads' #optional
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/lidarr/data:/config"
+      - "/download/lidarr/music:/music" #optional
+      - "/download/download:/downloads" #optional
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -212,15 +212,15 @@ services:
       PUID: $PUID
       PGID: $PGID
     volumes:
-      - '/docker/arr-stack/sonarr/data:/config'
-      - '/download/sonarr/tvseries:/tv' #optional
-      - '/download/download:/downloads' #optional
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/sonarr/data:/config"
+      - "/download/sonarr/tvseries:/tv" #optional
+      - "/download/download:/downloads" #optional
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -231,15 +231,15 @@ services:
       PUID: $PUID
       PGID: $PGID
     volumes:
-      - '/docker/arr-stack/bazarr/config:/config'
-      - '/download/radarr/movies:/movies' #optional
-      - '/download/sonarr/tvseries:/tv' #optional
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/bazarr/config:/config"
+      - "/download/radarr/movies:/movies" #optional
+      - "/download/sonarr/tvseries:/tv" #optional
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -250,13 +250,13 @@ services:
       PUID: $PUID
       PGID: $PGID
     volumes:
-      - '/docker/arr-stack/prowlarr/data:/config'
-    network_mode: 'service:gluetun'
+      - "/docker/arr-stack/prowlarr/data:/config"
+    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   # huntarr:
   #   image: ghcr.io/plexguide/huntarr:latest
@@ -330,20 +330,25 @@ services:
       PGID: $PGID
       PORT: 5055
     volumes:
-      - '/docker/arr-stack/jellyseerr/data:/app/config'
+      - "/docker/arr-stack/jellyseerr/data:/app/config"
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=front-end'
+      - "diun.enable=true"
+      - "traefik.enable=true"
+      - "traefik.docker.network=front-end"
 
-      - 'traefik.http.routers.jellyseerr-https.rule=Host(`jellyseerr.${BASE_URL:?error}`)'
-      - 'traefik.http.routers.jellyseerr-https.entrypoints=websecure'
-      - 'traefik.http.routers.jellyseerr-https.tls.certresolver=production'
-      - 'traefik.http.routers.jellyseerr-https.service=jellyseerr-svc'
-      - 'traefik.http.services.jellyseerr-svc.loadbalancer.server.port=5055'
-
+      - "traefik.http.routers.jellyseerr-https.rule=Host(`jellyseerr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.jellyseerr-https.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr-https.tls.certresolver=production"
+      - "traefik.http.routers.jellyseerr-https.service=jellyseerr-svc"
+      - "traefik.http.services.jellyseerr-svc.loadbalancer.server.port=5055"
+      # External magic
+      - 'traefik.http.routers.jellyseerr-https-public.entrypoints=websecure-public'
+      - 'traefik.http.routers.jellyseerr-https-public.rule=Host(`jellyseerr.${PUBLIC_URL:?error}`)'
+      - 'traefik.http.routers.jellyseerr-https-public.tls=true'
+      - 'traefik.http.routers.jellyseerr-https-public.tls.certresolver=production'
+      - 'traefik.http.routers.jellyseerr-https-public.service=jellyseerr-svc'
 networks:
   front-end:
     external: true

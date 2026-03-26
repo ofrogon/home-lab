@@ -1,5 +1,4 @@
 ---
-
 services:
   postgres:
     image: postgres:${POSTGRES_IMAGE_TAG}
@@ -16,7 +15,7 @@ services:
     volumes:
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
     environment:
       # timezone inside container
       - TZ
@@ -61,14 +60,14 @@ services:
       # additional settings
       - MM_SERVICESETTINGS_SITEURL
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.chat-http.entrypoints=web"
       - "traefik.http.routers.chat-http.rule=Host(`${DOMAIN}`)"
-      - 'traefik.http.routers.chat-http.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.chat-http.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?error}`)"
       - "traefik.http.routers.chat-https.entrypoints=websecure"
       - "traefik.http.routers.chat-https.rule=Host(`${DOMAIN}`)"
-      - 'traefik.http.routers.chat-https.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.chat-https.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?error}`)"
       - "traefik.http.routers.chat-https.tls=true"
       - "traefik.http.routers.chat-https.tls.certresolver=production"
       - "traefik.http.routers.chat-https.service=chat-svc"

@@ -1,13 +1,12 @@
 ---
-
 services:
   server:
     image: gitea/gitea:latest
     restart: unless-stopped
     container_name: gitea
     ports:
-    # - "3000:3000"
-    - "2221:22"
+      # - "3000:3000"
+      - "2221:22"
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -19,6 +18,7 @@ services:
       GITEA__database__PASSWD: $DATABASE_PSSWD
       GITEA__server__SSH_PORT: 2221
       GITEA__server__ROOT_URL: https://${TOP_URL:-gitea}.${BASE_URL:?error}
+      GITEA__server__LFS_START_SERVER: true
       DISABLE_REGISTRATION: true
     volumes:
       - "/docker/gitea/data:/data"
@@ -51,6 +51,8 @@ services:
       - "/docker/gitea/db:/var/lib/postgresql/data"
     networks:
       - back-end
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:

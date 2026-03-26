@@ -1,11 +1,10 @@
 ---
-
 services:
   monkeytype-frontend:
     container_name: monkeytype-frontend
     image: monkeytype/monkeytype-frontend:latest
-#    ports:
-#      - "${HTTP_PORT:-8080}:80"
+    #    ports:
+    #      - "${HTTP_PORT:-8080}:80"
     restart: on-failure
     depends_on:
       monkeytype-backend:
@@ -22,12 +21,12 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.monkeytype-http.entrypoints=web"
-      - 'traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-https.entrypoints=websecure"
-      - 'traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-https.tls=true"
       - "traefik.http.routers.monkeytype-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-https.service=monkeytype-svc"
@@ -37,8 +36,8 @@ services:
   monkeytype-backend:
     container_name: monkeytype-backend
     image: monkeytype/monkeytype-backend:latest
-#    ports:
-#      - "${BACKEND_PORT:-5005}:5005"
+    #    ports:
+    #      - "${BACKEND_PORT:-5005}:5005"
     restart: on-failure
     environment:
       - MODE=dev
@@ -77,18 +76,18 @@ services:
       - front-end
       - back-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.monkeytype-be-http.entrypoints=web"
-      - 'traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)'
+      - "traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-be-https.entrypoints=websecure"
-      - 'traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)'
+      - "traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-be-https.tls=true"
       - "traefik.http.routers.monkeytype-be-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-be-https.service=monkeytype-be-svc"
       - "traefik.http.services.monkeytype-be-svc.loadBalancer.server.port=80"
       - "traefik.docker.network=front-end"
-      
+
   monkeytype-redis:
     container_name: monkeytype-redis
     image: redis:6.2.6
@@ -99,7 +98,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 5s
       timeout: 10s
       retries: 15

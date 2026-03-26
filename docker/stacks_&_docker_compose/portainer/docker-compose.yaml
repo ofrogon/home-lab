@@ -1,5 +1,4 @@
 ---
-
 services:
   portainer:
     image: portainer/portainer-ee:alpine
@@ -16,13 +15,13 @@ services:
     networks:
       - front-end
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
       # Frontend
       - "traefik.enable=true"
       - "traefik.http.routers.portainer-fe-http.entrypoints=web"
-      - 'traefik.http.routers.portainer-fe-http.rule=Host(`${TOP_URL:-portainer}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.portainer-fe-http.rule=Host(`${TOP_URL:-portainer}.${BASE_URL:?error}`)"
       - "traefik.http.routers.portainer-fe-https.entrypoints=websecure"
-      - 'traefik.http.routers.portainer-fe-http.rule=Host(`${TOP_URL:-portainer}.${BASE_URL:?error}`)'
+      - "traefik.http.routers.portainer-fe-http.rule=Host(`${TOP_URL:-portainer}.${BASE_URL:?error}`)"
       - "traefik.http.routers.portainer-fe-https.tls=true"
       - "traefik.http.routers.portainer-fe-https.tls.certresolver=production"
       - "traefik.http.routers.portainer-fe-https.service=portainer-fe-svc"
