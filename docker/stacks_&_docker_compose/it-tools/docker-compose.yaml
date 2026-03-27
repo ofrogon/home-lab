@@ -3,13 +3,13 @@ services:
   it-tools:
     image: "sharevb/it-tools:latest"
     container_name: it-tools
+    restart: unless-stopped
+    #ports:
+    #    - "8080:8080"
     environment:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-    #ports:
-    #    - "8080:8080"
-    restart: unless-stopped
     networks:
       - front-end
     labels:

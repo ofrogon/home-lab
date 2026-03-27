@@ -27,10 +27,10 @@ services:
       - "/docker/traefik/conf/:/etc/traefik/conf/"
       - "/docker/traefik/certs/:/etc/traefik/certs/"
       - "/docker/traefik/logs/:/var/log/traefik/"
-    networks:
-      - front-end
     env_file:
       - stack.env
+    networks:
+      - front-end
     labels:
       - "diun.enable=true"
 

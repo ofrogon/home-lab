@@ -4,14 +4,14 @@ services:
     image: openspeedtest/latest
     container_name: open-speedtest
     restart: unless-stopped
+    # ports:
+    #   - '3000:3000'
+    #   - '3001:3001'
     environment:
       TZ: America/Montreal
       ENABLE_LETSENCRYPT: false
       DOMAIN_NAME: false
       USER_EMAIL: false
-    # ports:
-    #   - '3000:3000'
-    #   - '3001:3001'
     networks:
       - front-end
     labels:

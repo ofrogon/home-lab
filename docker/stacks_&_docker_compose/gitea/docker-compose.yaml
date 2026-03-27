@@ -2,8 +2,8 @@
 services:
   server:
     image: gitea/gitea:latest
-    restart: unless-stopped
     container_name: gitea
+    restart: unless-stopped
     ports:
       # - "3000:3000"
       - "2221:22"
@@ -24,6 +24,11 @@ services:
       - "/docker/gitea/data:/data"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
+    depends_on:
+      - db
+    networks:
+      - front-end
+      - back-end
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -34,11 +39,6 @@ services:
       - "traefik.http.routers.gitea-https.service=gitea-svc"
       - "traefik.http.services.gitea-svc.loadBalancer.server.port=3000"
       - "traefik.docker.network=front-end"
-    depends_on:
-      - db
-    networks:
-      - front-end
-      - back-end
 
   db:
     image: postgres:14

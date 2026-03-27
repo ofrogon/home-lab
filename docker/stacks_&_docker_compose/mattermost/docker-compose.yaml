@@ -3,6 +3,16 @@ services:
   postgres:
     image: postgres:${POSTGRES_IMAGE_TAG}
     restart: ${RESTART_POLICY}
+    environment:
+      # timezone inside container
+      - TZ
+
+      # necessary Postgres options/variables
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    volumes:
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
     networks:
       - back-end
     security_opt:
@@ -12,40 +22,12 @@ services:
     tmpfs:
       - /tmp
       - /var/run/postgresql
-    volumes:
-      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
     labels:
       - "diun.enable=true"
-    environment:
-      # timezone inside container
-      - TZ
-
-      # necessary Postgres options/variables
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
 
   mattermost:
-    depends_on:
-      - postgres
     image: mattermost/${MATTERMOST_IMAGE}:${MATTERMOST_IMAGE_TAG}
     restart: ${RESTART_POLICY}
-    networks:
-      - front-end
-      - back-end
-    security_opt:
-      - no-new-privileges:true
-    pids_limit: 200
-    read_only: ${MATTERMOST_CONTAINER_READONLY}
-    tmpfs:
-      - /tmp
-    volumes:
-      - ${MATTERMOST_CONFIG_PATH}:/mattermost/config:rw
-      - ${MATTERMOST_DATA_PATH}:/mattermost/data:rw
-      - ${MATTERMOST_LOGS_PATH}:/mattermost/logs:rw
-      - ${MATTERMOST_PLUGINS_PATH}:/mattermost/plugins:rw
-      - ${MATTERMOST_CLIENT_PLUGINS_PATH}:/mattermost/client/plugins:rw
-      - ${MATTERMOST_BLEVE_INDEXES_PATH}:/mattermost/bleve-indexes:rw
     environment:
       # timezone inside container
       - TZ
@@ -59,6 +41,24 @@ services:
 
       # additional settings
       - MM_SERVICESETTINGS_SITEURL
+    volumes:
+      - ${MATTERMOST_CONFIG_PATH}:/mattermost/config:rw
+      - ${MATTERMOST_DATA_PATH}:/mattermost/data:rw
+      - ${MATTERMOST_LOGS_PATH}:/mattermost/logs:rw
+      - ${MATTERMOST_PLUGINS_PATH}:/mattermost/plugins:rw
+      - ${MATTERMOST_CLIENT_PLUGINS_PATH}:/mattermost/client/plugins:rw
+      - ${MATTERMOST_BLEVE_INDEXES_PATH}:/mattermost/bleve-indexes:rw
+    depends_on:
+      - postgres
+    networks:
+      - front-end
+      - back-end
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 200
+    read_only: ${MATTERMOST_CONTAINER_READONLY}
+    tmpfs:
+      - /tmp
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

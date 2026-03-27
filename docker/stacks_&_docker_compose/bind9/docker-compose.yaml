@@ -7,12 +7,12 @@ services:
     ports:
       - "53:53/udp"
       - "53:53/tcp"
+    environment:
+      TZ: America/Montreal
+      BIND9_USER: root
     volumes:
       - /docker/bind9/config:/etc/bind
       - /docker/bind9/cache:/var/cache/bind
       - /docker/bind9/records:/var/log/bind
-    environment:
-      TZ: America/Montreal
-      BIND9_USER: root
     labels:
       - "diun.enable=true"

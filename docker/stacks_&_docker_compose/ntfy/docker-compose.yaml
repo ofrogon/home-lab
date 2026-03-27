@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     command:
       - serve
+    user: "${PUID}:${PGID}"
+    #    ports:
+    #      - 80:80
     environment:
       TZ: America/Montreal
       NTFY_BASE_URL: https://ntfy.${BASE_URL:?base url required}
@@ -15,12 +18,9 @@ services:
       NTFY_BEHIND_PROXY: true
       NTFY_ATTACHMENT_CACHE_DIR: /var/cache/ntfy/attachments
       NTFY_ENABLE_LOGIN: true
-    user: "${PUID}:${PGID}"
     volumes:
       - /docker/ntfy/cache:/var/cache/ntfy
       - /docker/ntfy/etc:/etc/ntfy
-    #    ports:
-    #      - 80:80
     healthcheck: # optional: remember to adapt the host:port to your environment
       test:
         [

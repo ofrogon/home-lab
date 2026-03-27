@@ -2,8 +2,8 @@
 services:
   calibre-web-alex:
     image: lscr.io/linuxserver/calibre-web:latest
-    restart: unless-stopped
     container_name: calibre-web-alex
+    restart: unless-stopped
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -30,8 +30,8 @@ services:
 
   calibre-web-andre:
     image: lscr.io/linuxserver/calibre-web:latest
-    restart: unless-stopped
     container_name: calibre-web-andre
+    restart: unless-stopped
     environment:
       TZ: America/Montreal
       PUID: $PUID
@@ -58,8 +58,8 @@ services:
 
   calibre-web-nsfw:
     image: lscr.io/linuxserver/calibre-web:latest
-    restart: unless-stopped
     container_name: calibre-web-nsfw
+    restart: unless-stopped
     environment:
       TZ: America/Montreal
       PUID: $PUID

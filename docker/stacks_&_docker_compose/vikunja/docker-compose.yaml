@@ -3,6 +3,9 @@ services:
   vikunja:
     image: vikunja/vikunja
     container_name: vikunja
+    restart: unless-stopped
+    #    ports:
+    #      - 3456:3456
     environment:
       TZ: America/Montreal
       # PUID: $PUID
@@ -34,12 +37,9 @@ services:
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL: ${VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIk_LOGOUTURL}
       VIKUNJA_AUTH_OPENID_PROVIDERS_AUTHENTIK_SCOPE: "openid email profile"
       VIKUNJA_AUTH_LOCAL_ENABLED: true
-    #    ports:
-    #      - 3456:3456
     volumes:
       - /docker/vikunja/files:/app/vikunja/files
       - /docker/vikunja/config.yml:/etc/vikunja/config.yml
-    restart: unless-stopped
     depends_on:
       vikunjasql:
         condition: service_healthy
@@ -62,12 +62,12 @@ services:
 
   vikunjasql:
     image: postgres:18
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${VIKUNJA_DATABASE_PASSWORD}
       POSTGRES_USER: vikunja
     volumes:
       - /docker/vikunja/db:/var/lib/postgresql
-    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER"]
       interval: 2s

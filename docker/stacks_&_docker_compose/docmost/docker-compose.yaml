@@ -2,21 +2,21 @@
 services:
   docmost:
     image: docmost/docmost:latest
-    restart: unless-stopped
     container_name: docmost
-    depends_on:
-      - docmostsql
-      - docmostredis
+    restart: unless-stopped
+    # ports:
+    #   - "3000:3000"
     environment:
       TZ: America/Montreal
       APP_URL: "https://${TOP_URL:-docmost}.${BASE_URL:?error}"
       APP_SECRET: ${APP_SECRET}
       DATABASE_URL: "postgresql://docmost:${DB_PASSWORD}@docmostsql:5432/docmost?schema=public"
       REDIS_URL: "redis://docmostredis:6379"
-    # ports:
-    #   - "3000:3000"
     volumes:
       - /docker/docmost/storage:/app/data/storage
+    depends_on:
+      - docmostsql
+      - docmostredis
     networks:
       - front-end
       - back-end
@@ -33,12 +33,12 @@ services:
 
   docmostsql:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       TZ: America/Montreal
       POSTGRES_DB: docmost
       POSTGRES_USER: docmost
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    restart: unless-stopped
     volumes:
       - /docker/docmost/db:/var/lib/postgresql/data
     networks:
@@ -49,10 +49,10 @@ services:
   docmostredis:
     image: redis:7.2-alpine
     restart: unless-stopped
-    volumes:
-      - /docker/docmost/redis:/data
     environment:
       TZ: America/Montreal
+    volumes:
+      - /docker/docmost/redis:/data
     networks:
       - back-end
     labels:

@@ -1,11 +1,11 @@
 ---
 services:
   monkeytype-frontend:
-    container_name: monkeytype-frontend
     image: monkeytype/monkeytype-frontend:latest
+    container_name: monkeytype-frontend
+    restart: on-failure
     #    ports:
     #      - "${HTTP_PORT:-8080}:80"
-    restart: on-failure
     depends_on:
       monkeytype-backend:
         condition: service_healthy
@@ -35,11 +35,11 @@ services:
       - "traefik.docker.network=front-end"
 
   monkeytype-backend:
-    container_name: monkeytype-backend
     image: monkeytype/monkeytype-backend:latest
+    container_name: monkeytype-backend
+    restart: on-failure
     #    ports:
     #      - "${BACKEND_PORT:-5005}:5005"
-    restart: on-failure
     environment:
       TZ: America/Montreal
       MODE: dev
@@ -63,17 +63,17 @@ services:
         source: /docker/monkeytype/backend-configuration.json
         target: /app/backend/dist/backend-configuration.json
         read_only: true
-    depends_on:
-      monkeytype-redis:
-        condition: service_healthy
-      monkeytype-mongodb:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "nc", "-z", "-v", "localhost", "5005"]
       interval: 5s
       timeout: 10s
       retries: 15
       start_period: 5s
+    depends_on:
+      monkeytype-redis:
+        condition: service_healthy
+      monkeytype-mongodb:
+        condition: service_healthy
     networks:
       - front-end
       - back-end
@@ -91,12 +91,12 @@ services:
       - "traefik.docker.network=front-end"
 
   monkeytype-redis:
-    container_name: monkeytype-redis
     image: redis:6.2.6
+    container_name: monkeytype-redis
+    restart: on-failure
     #uncomment if you want to expose the redis server
     #ports:
     #  - "${REDIS_PORT:-6379}:6379"
-    restart: on-failure
     environment:
       TZ: America/Montreal
     volumes:
@@ -111,16 +111,16 @@ services:
       - back-end
 
   monkeytype-mongodb:
-    container_name: monkeytype-mongodb
     image: mongo:5.0.13
+    container_name: monkeytype-mongodb
     restart: on-failure
+    #uncomment if you want to expose the mongodb server
+    #ports:
+    #  - "${MONGO_PORT:-27017}:27017"
     environment:
       TZ: America/Montreal
     volumes:
       - mongo-data:/data/db
-    #uncomment if you want to expose the mongodb server
-    #ports:
-    #  - "${MONGO_PORT:-27017}:27017"
     healthcheck:
       test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
       interval: 5s

@@ -18,16 +18,11 @@ services:
   #     - "diun.enable=true"
 
   searxng:
-    container_name: searxng
     image: docker.io/searxng/searxng:latest
+    container_name: searxng
     restart: unless-stopped
-    networks:
-      - front-end
-      - back-end
     #    ports:
     #      - "127.0.0.1:8080:8080"
-    volumes:
-      - /docker/searxng:/etc/searxng:rw
     environment:
       TZ: America/Montreal
       SEARXNG_BASE_URL: https://${SEARXNG_HOSTNAME:-localhost}/
@@ -36,6 +31,11 @@ services:
       SEARXNG_IMAGE_PROXY: true
       SEARXNG_STATIC_USE_HASH: true
       # SEARXNG_REDIS_URL: "redis://redis:6379/0"
+    volumes:
+      - /docker/searxng:/etc/searxng:rw
+    networks:
+      - front-end
+      - back-end
     logging:
       driver: "json-file"
       options:

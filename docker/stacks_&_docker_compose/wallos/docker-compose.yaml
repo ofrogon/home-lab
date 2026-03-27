@@ -2,8 +2,8 @@
 services:
   wallos:
     image: bellamy/wallos:latest
-    restart: unless-stopped
     container_name: wallos
+    restart: unless-stopped
     # user: "${PUID}:${PGID}"
     #    ports:
     #      - "8282:80/tcp"
@@ -14,6 +14,8 @@ services:
     volumes:
       - "/docker/wallos/db:/var/www/html/db"
       - "/docker/wallos/logos:/var/www/html/images/uploads/logos"
+    networks:
+      - front-end
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -24,8 +26,6 @@ services:
       - "traefik.http.routers.wallos-https.service=wallos-svc"
       - "traefik.http.services.wallos-svc.loadBalancer.server.port=80"
       - "traefik.docker.network=front-end"
-    networks:
-      - front-end
 
 networks:
   front-end:

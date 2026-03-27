@@ -2,9 +2,9 @@
 services:
   vaultwarden:
     image: vaultwarden/server:latest
+    container_name: vaultwarden
     restart: unless-stopped
     user: "${PUID}:${PGID}"
-    container_name: vaultwarden
     # ports:
     #   - 8080:80
     environment:
