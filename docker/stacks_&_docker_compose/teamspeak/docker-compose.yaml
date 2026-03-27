@@ -27,10 +27,13 @@ services:
     image: mariadb
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       MYSQL_ROOT_PASSWORD: ${SQL_PASS}
       MYSQL_DATABASE: ${SQL_DB_NAME}
     networks:
       - back-end
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:

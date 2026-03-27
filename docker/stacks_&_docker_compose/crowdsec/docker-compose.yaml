@@ -5,6 +5,7 @@ services:
     container_name: crowdsec
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       GID: "${GID-1000}"
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
@@ -24,6 +25,7 @@ services:
     container_name: bouncer-traefik
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       CROWDSEC_BOUNCER_API_KEY: $CROWDSEC_BOUNCER_API_KEY
       CROWDSEC_AGENT_HOST: crowdsec:8080
     networks:

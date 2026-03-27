@@ -55,6 +55,8 @@ services:
       TZ: America/Montreal
     networks:
       - back-end
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:

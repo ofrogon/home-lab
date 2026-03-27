@@ -34,6 +34,7 @@ services:
       - "traefik.http.routers.spliit-https-public.tls=true"
       - "traefik.http.routers.spliit-https-public.tls.certresolver=production"
       - "traefik.http.routers.spliit-https-public.service=spliit-svc"
+      - "diun.enable=true"
 
   spliit-db:
     image: postgres:latest
@@ -53,6 +54,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:

@@ -6,16 +6,21 @@ services:
     env_file:
       - stack.env
     restart: unless-stopped
+    environment:
+      TZ: America/Montreal
     volumes:
       - "/docker/linkwarden/pgdata:/var/lib/postgresql/data"
     networks:
       - linkwarden
+    labels:
+      - "diun.enable=true"
 
   linkwarden:
     image: ghcr.io/linkwarden/linkwarden:latest
     container_name: linkwarden
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
     volumes:
       - "/docker/linkwarden/data:/data/data"
@@ -45,6 +50,8 @@ services:
     restart: always
     env_file:
       - stack.env
+    environment:
+      TZ: America/Montreal
     volumes:
       - "/docker/linkwarden/meili_data:/meili_data"
     networks:

@@ -44,6 +44,7 @@ services:
     image: postgres:14
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       POSTGRES_USER: gitea
       POSTGRES_PASSWORD: $DATABASE_PSSWD
       POSTGRES_DB: gitea

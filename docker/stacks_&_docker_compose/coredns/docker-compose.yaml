@@ -5,6 +5,8 @@ services:
     container_name: coredns
     restart: unless-stopped
     command: -conf /etc/coredns/Corefile -dns.port 53
+    environment:
+      TZ: America/Montreal
     ports:
       - "53:53"
       - "53:53/udp"

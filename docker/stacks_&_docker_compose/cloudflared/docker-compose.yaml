@@ -6,6 +6,7 @@ services:
     restart: always
     command: tunnel run
     environment:
+      TZ: America/Montreal
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:?tunnel token required}
     networks:
       - public
