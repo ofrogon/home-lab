@@ -10,6 +10,7 @@ services:
       monkeytype-backend:
         condition: service_healthy
     environment:
+      - TZ=America/Montreal
       - FIREBASE_APIKEY=${FIREBASE_APIKEY:-}
       - FIREBASE_AUTHDOMAIN=${FIREBASE_AUTHDOMAIN:-}
       - FIREBASE_PROJECTID=${FIREBASE_PROJECTID:-}
@@ -26,7 +27,7 @@ services:
       - "traefik.http.routers.monkeytype-http.entrypoints=web"
       - "traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-https.entrypoints=websecure"
-      - "traefik.http.routers.monkeytype-http.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.monkeytype-https.rule=Host(`${TOP_URL:-monkeytype}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-https.tls=true"
       - "traefik.http.routers.monkeytype-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-https.service=monkeytype-svc"
@@ -40,6 +41,7 @@ services:
     #      - "${BACKEND_PORT:-5005}:5005"
     restart: on-failure
     environment:
+      - TZ=America/Montreal
       - MODE=dev
       - DB_NAME=monkeytype
       - DB_URI=mongodb://monkeytype-mongodb:27017
@@ -79,13 +81,13 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.monkeytype-be-http.entrypoints=web"
-      - "traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)"
+      - "traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-be-https.entrypoints=websecure"
-      - "traefik.http.routers.monkeytype-be-http.rule=Host(`${TOP_URL_BE:-monkeytype-be.${BASE_URL:?error}`)"
+      - "traefik.http.routers.monkeytype-be-https.rule=Host(`${TOP_URL_BE:-monkeytype-be}.${BASE_URL:?error}`)"
       - "traefik.http.routers.monkeytype-be-https.tls=true"
       - "traefik.http.routers.monkeytype-be-https.tls.certresolver=production"
       - "traefik.http.routers.monkeytype-be-https.service=monkeytype-be-svc"
-      - "traefik.http.services.monkeytype-be-svc.loadBalancer.server.port=80"
+      - "traefik.http.services.monkeytype-be-svc.loadBalancer.server.port=5005"
       - "traefik.docker.network=front-end"
 
   monkeytype-redis:
@@ -95,6 +97,8 @@ services:
     #ports:
     #  - "${REDIS_PORT:-6379}:6379"
     restart: on-failure
+    environment:
+      TZ: America/Montreal
     volumes:
       - redis-data:/data
     healthcheck:
@@ -110,6 +114,8 @@ services:
     container_name: monkeytype-mongodb
     image: mongo:5.0.13
     restart: on-failure
+    environment:
+      TZ: America/Montreal
     volumes:
       - mongo-data:/data/db
     #uncomment if you want to expose the mongodb server
