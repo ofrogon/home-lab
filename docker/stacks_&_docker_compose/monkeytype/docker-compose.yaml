@@ -10,15 +10,15 @@ services:
       monkeytype-backend:
         condition: service_healthy
     environment:
-      - TZ=America/Montreal
-      - FIREBASE_APIKEY=${FIREBASE_APIKEY:-}
-      - FIREBASE_AUTHDOMAIN=${FIREBASE_AUTHDOMAIN:-}
-      - FIREBASE_PROJECTID=${FIREBASE_PROJECTID:-}
-      - FIREBASE_STORAGEBUCKET=${FIREBASE_STORAGEBUCKET:-}
-      - FIREBASE_MESSAGINGSENDERID=${FIREBASE_MESSAGINGSENDERID:-}
-      - FIREBASE_APPID=${FIREBASE_APPID:-}
-      - MONKEYTYPE_BACKENDURL=${MONKEYTYPE_BACKENDURL}
-      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
+      TZ: America/Montreal
+      FIREBASE_APIKEY: ${FIREBASE_APIKEY:-}
+      FIREBASE_AUTHDOMAIN: ${FIREBASE_AUTHDOMAIN:-}
+      FIREBASE_PROJECTID: ${FIREBASE_PROJECTID:-}
+      FIREBASE_STORAGEBUCKET: ${FIREBASE_STORAGEBUCKET:-}
+      FIREBASE_MESSAGINGSENDERID: ${FIREBASE_MESSAGINGSENDERID:-}
+      FIREBASE_APPID: ${FIREBASE_APPID:-}
+      MONKEYTYPE_BACKENDURL: ${MONKEYTYPE_BACKENDURL}
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY:-}
     networks:
       - front-end
     labels:
@@ -41,18 +41,18 @@ services:
     #      - "${BACKEND_PORT:-5005}:5005"
     restart: on-failure
     environment:
-      - TZ=America/Montreal
-      - MODE=dev
-      - DB_NAME=monkeytype
-      - DB_URI=mongodb://monkeytype-mongodb:27017
-      - REDIS_URI=redis://monkeytype-redis:6379
-      - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
-      - RECAPTCHA_SECRET=${RECAPTCHA_SECRET:-}
-      - EMAIL_HOST=${EMAIL_HOST:-}
-      - EMAIL_PORT=${EMAIL_PORT:-}
-      - EMAIL_USER=${EMAIL_USER:-}
-      - EMAIL_PASS=${EMAIL_PASS:-}
-      - EMAIL_FROM=${EMAIL_FROM:-}
+      TZ: America/Montreal
+      MODE: dev
+      DB_NAME: monkeytype
+      DB_URI: mongodb://monkeytype-mongodb:27017
+      REDIS_URI: redis://monkeytype-redis:6379
+      FRONTEND_URL: ${MONKEYTYPE_FRONTENDURL}
+      RECAPTCHA_SECRET: ${RECAPTCHA_SECRET:-}
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
     volumes:
       #uncomment to enable the account system, check the SELF_HOSTING.md file
       - type: bind

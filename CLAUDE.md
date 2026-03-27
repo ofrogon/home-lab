@@ -52,3 +52,4 @@ Stacks are managed via **Portainer**. Environment variables in `stack.env` files
 - **Update monitoring**: `diun.enable=true` label on every container for DIUN notifications.
 - **Image versions**: LinuxServer images generally use `:latest`; critical services (Authentik, PostgreSQL) pin versions.
 - Commented-out services within a compose file represent disabled/optional components — keep them rather than deleting.
+- **Environment variables**: Use YAML mapping format (`KEY: value`) rather than sequence format (`- KEY=value`) in all `environment` blocks.
