@@ -122,7 +122,7 @@ services:
       AUTHENTIK_EMAIL__PORT: 465
       # Optionally authenticate (don't add quotation marks to your password)
       AUTHENTIK_EMAIL__USERNAME: admin@tek-sdi.com
-      AUTHENTIK_EMAIL__PASSWORD: ${UTHENTIK_EMAIL__PASSWORD}
+      AUTHENTIK_EMAIL__PASSWORD: ${AUTHENTIK_EMAIL__PASSWORD}
       # Use StartTLS
       AUTHENTIK_EMAIL__USE_TLS: false
       # Use SSL
