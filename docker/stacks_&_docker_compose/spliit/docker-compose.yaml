@@ -20,9 +20,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.spliit-http.entrypoints=web"
-      - 'traefik.http.routers.spliit-http.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?error}`)'
+      - 'traefik.http.routers.spliit-http.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?BASE_URL not set}`)'
       - "traefik.http.routers.spliit-https.entrypoints=websecure"
-      - 'traefik.http.routers.spliit-https.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?error}`)'
+      - 'traefik.http.routers.spliit-https.rule=Host(`${TOP_URL:-spliit}.${BASE_URL:?BASE_URL not set}`)'
       - "traefik.http.routers.spliit-https.tls=true"
       - "traefik.http.routers.spliit-https.tls.certresolver=production"
       - "traefik.http.routers.spliit-https.service=spliit-svc"
@@ -30,7 +30,7 @@ services:
       - "traefik.docker.network=front-end"
       # External magic
       - "traefik.http.routers.spliit-https-public.entrypoints=websecure-public"
-      - "traefik.http.routers.spliit-https-public.rule=Host(`${TOP_URL:-spliit}.${PUBLIC_URL:?error}`)"
+      - "traefik.http.routers.spliit-https-public.rule=Host(`${TOP_URL:-spliit}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.spliit-https-public.tls=true"
       - "traefik.http.routers.spliit-https-public.tls.certresolver=production"
       - "traefik.http.routers.spliit-https-public.service=spliit-svc"

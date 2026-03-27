@@ -8,7 +8,7 @@ services:
     #   - "3000:3000"
     environment:
       TZ: America/Montreal
-      APP_URL: "https://${TOP_URL:-docmost}.${BASE_URL:?error}"
+      APP_URL: "https://${TOP_URL:-docmost}.${BASE_URL:?BASE_URL not set}"
       APP_SECRET: ${APP_SECRET}
       DATABASE_URL: "postgresql://docmost:${DB_PASSWORD}@docmostsql:5432/docmost?schema=public"
       REDIS_URL: "redis://docmostredis:6379"
@@ -23,8 +23,10 @@ services:
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
+      - "traefik.http.routers.docmost-http.entrypoints=web"
+      - "traefik.http.routers.docmost-http.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.docmost-https.entrypoints=websecure"
-      - "traefik.http.routers.docmost-https.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.docmost-https.rule=Host(`${TOP_URL:-docmost}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.docmost-https.tls=true"
       - "traefik.http.routers.docmost-https.tls.certresolver=production"
       - "traefik.http.routers.docmost-https.service=docmost-svc"

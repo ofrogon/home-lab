@@ -53,5 +53,8 @@ Stacks are managed via **Portainer**. Environment variables in `stack.env` files
 - **Image versions**: LinuxServer images generally use `:latest`; critical services (Authentik, PostgreSQL) pin versions.
 - Commented-out services within a compose file represent disabled/optional components — keep them rather than deleting.
 - **Environment variables**: Use YAML mapping format (`KEY: value`) rather than sequence format (`- KEY=value`) in all `environment` blocks.
+- **stack.env completeness**: Every variable referenced in `docker-compose.yaml` must also be declared in the `stack.env` file of the same directory.
+- **Variable injection errors**: Use the `${VAR:?message}` syntax for required variables; the error message must be short and describe the missing variable (e.g., `${BASE_URL:?BASE_URL not set}`).
+- **Traefik local URLs**: Services routed through Traefik on a local URL must declare both the `web` (HTTP) and `websecure` (HTTPS) entrypoints.
 - **Service key order**: Always use this order for keys within each service block:
   `image` → `container_name` → `restart` → `command` → `user` → `shm_size` → `cap_add` → `devices` → `ports` → `secrets` → `environment` → `volumes` → `env_file` → `healthcheck` → `depends_on` → `networks` / `network_mode` → `dns` → `security_opt` → `pids_limit` → `read_only` → `tmpfs` → `logging` → `labels`

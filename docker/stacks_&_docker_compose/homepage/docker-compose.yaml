@@ -11,7 +11,7 @@ services:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
-      HOMEPAGE_ALLOWED_HOSTS: "${TOP_URL:-dash}.${BASE_URL:?error}"
+      HOMEPAGE_ALLOWED_HOSTS: "${TOP_URL:-dash}.${BASE_URL:?BASE_URL not set}"
     volumes:
       - "/docker/homepage/config:/app/config"
       - "/docker/homepage/icons:/app/public/icons"
@@ -22,9 +22,9 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.homepage-http.entrypoints=web"
-      - "traefik.http.routers.homepage-http.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.homepage-http.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.homepage-https.entrypoints=websecure"
-      - "traefik.http.routers.homepage-https.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.homepage-https.rule=Host(`${TOP_URL:-dash}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.homepage-https.tls=true"
       - "traefik.http.routers.homepage-https.tls.certresolver=production"
       - "traefik.http.routers.homepage-https.service=homepage-svc"

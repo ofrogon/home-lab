@@ -50,61 +50,79 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=front-end"
 
-      - "traefik.http.routers.gluetun-https.rule=Host(`gluetun.${BASE_URL:?error}`)"
+      - "traefik.http.routers.gluetun-http.entrypoints=web"
+      - "traefik.http.routers.gluetun-http.rule=Host(`gluetun.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.gluetun-https.rule=Host(`gluetun.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.gluetun-https.entrypoints=websecure"
       - "traefik.http.routers.gluetun-https.tls.certresolver=production"
       - "traefik.http.routers.gluetun-https.service=gluetun-svc"
       - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8000"
 
-      - "traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.${BASE_URL:?error}`)"
+      - "traefik.http.routers.qbittorrent-http.entrypoints=web"
+      - "traefik.http.routers.qbittorrent-http.rule=Host(`qbittorrent.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.qbittorrent-https.rule=Host(`qbittorrent.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.qbittorrent-https.entrypoints=websecure"
       - "traefik.http.routers.qbittorrent-https.tls.certresolver=production"
       - "traefik.http.routers.qbittorrent-https.service=qbittorrent-svc"
       - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085"
 
-      - "traefik.http.routers.jackett-https.rule=Host(`jackett.${BASE_URL:?error}`)"
+      - "traefik.http.routers.jackett-http.entrypoints=web"
+      - "traefik.http.routers.jackett-http.rule=Host(`jackett.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.jackett-https.rule=Host(`jackett.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.jackett-https.entrypoints=websecure"
       - "traefik.http.routers.jackett-https.tls.certresolver=production"
       - "traefik.http.routers.jackett-https.service=jackett-svc"
       - "traefik.http.services.jackett-svc.loadbalancer.server.port=9117"
 
-      - "traefik.http.routers.radarr-https.rule=Host(`radarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.radarr-http.entrypoints=web"
+      - "traefik.http.routers.radarr-http.rule=Host(`radarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.radarr-https.rule=Host(`radarr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.radarr-https.entrypoints=websecure"
       - "traefik.http.routers.radarr-https.tls.certresolver=production"
       - "traefik.http.routers.radarr-https.service=radarr-svc"
       - "traefik.http.services.radarr-svc.loadbalancer.server.port=7878"
 
-      - "traefik.http.routers.lidarr-https.rule=Host(`lidarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.lidarr-http.entrypoints=web"
+      - "traefik.http.routers.lidarr-http.rule=Host(`lidarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.lidarr-https.rule=Host(`lidarr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.lidarr-https.entrypoints=websecure"
       - "traefik.http.routers.lidarr-https.tls.certresolver=production"
       - "traefik.http.routers.lidarr-https.service=lidarr-svc"
       - "traefik.http.services.lidarr-svc.loadbalancer.server.port=8686"
 
-      - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.sonarr-http.entrypoints=web"
+      - "traefik.http.routers.sonarr-http.rule=Host(`sonarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.sonarr-https.entrypoints=websecure"
       - "traefik.http.routers.sonarr-https.tls.certresolver=production"
       - "traefik.http.routers.sonarr-https.service=sonarr-svc"
       - "traefik.http.services.sonarr-svc.loadbalancer.server.port=8989"
 
-      - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.prowlarr-http.entrypoints=web"
+      - "traefik.http.routers.prowlarr-http.rule=Host(`prowlarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.prowlarr-https.entrypoints=websecure"
       - "traefik.http.routers.prowlarr-https.tls.certresolver=production"
       - "traefik.http.routers.prowlarr-https.service=prowlarr-svc"
       - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
 
-      # - 'traefik.http.routers.huntarr-https.rule=Host(`huntarr.${BASE_URL:?error}`)'
+      # - 'traefik.http.routers.huntarr-http.entrypoints=web'
+      # - 'traefik.http.routers.huntarr-http.rule=Host(`huntarr.${BASE_URL:?BASE_URL not set}`)'
+      # - 'traefik.http.routers.huntarr-https.rule=Host(`huntarr.${BASE_URL:?BASE_URL not set}`)'
       # - 'traefik.http.routers.huntarr-https.entrypoints=websecure'
       # - 'traefik.http.routers.huntarr-https.tls.certresolver=production'
       # - 'traefik.http.routers.huntarr-https.service=huntarr-svc'
       # - 'traefik.http.services.huntarr-svc.loadbalancer.server.port=9705'
 
-      - "traefik.http.routers.bazarr-https.rule=Host(`bazarr.${BASE_URL:?error}`)"
+      - "traefik.http.routers.bazarr-http.entrypoints=web"
+      - "traefik.http.routers.bazarr-http.rule=Host(`bazarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.bazarr-https.rule=Host(`bazarr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.bazarr-https.entrypoints=websecure"
       - "traefik.http.routers.bazarr-https.tls.certresolver=production"
       - "traefik.http.routers.bazarr-https.service=bazarr-svc"
       - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
 
-      # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?error}`)'
+      # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?BASE_URL not set}`)'
       # - 'traefik.http.routers.rdt-https.entrypoints=websecure'
       # - 'traefik.http.routers.rdt-https.tls.certresolver=production'
       # - 'traefik.http.routers.rdt-https.service=rdt-svc'
@@ -315,14 +333,16 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=front-end"
 
-      - "traefik.http.routers.seer-https.rule=Host(`seer.${BASE_URL:?error}`)"
+      - "traefik.http.routers.seer-http.entrypoints=web"
+      - "traefik.http.routers.seer-http.rule=Host(`seer.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.seer-https.rule=Host(`seer.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.seer-https.entrypoints=websecure"
       - "traefik.http.routers.seer-https.tls.certresolver=production"
       - "traefik.http.routers.seer-https.service=seer-svc"
       - "traefik.http.services.seer-svc.loadbalancer.server.port=5055"
       # External magic
       - 'traefik.http.routers.seer-https-public.entrypoints=websecure-public'
-      - 'traefik.http.routers.seer-https-public.rule=Host(`seer.${PUBLIC_URL:?error}`)'
+      - 'traefik.http.routers.seer-https-public.rule=Host(`seer.${PUBLIC_URL:?PUBLIC_URL not set}`)'
       - 'traefik.http.routers.seer-https-public.tls=true'
       - 'traefik.http.routers.seer-https-public.tls.certresolver=production'
       - 'traefik.http.routers.seer-https-public.service=seer-svc'

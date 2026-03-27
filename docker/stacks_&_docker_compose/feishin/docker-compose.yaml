@@ -11,7 +11,7 @@ services:
       # SERVER_NAME: navidrome # pre defined server name
       # SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
       # SERVER_TYPE: navidrome # jellyfin also works
-      # SERVER_URL: 'https://${TOP_URL:-music}.${BASE_URL:?error}'
+      # SERVER_URL: 'https://${TOP_URL:-music}.${BASE_URL:?BASE_URL not set}'
       UMASK: 002
     # ports:
     # - 9180:9180

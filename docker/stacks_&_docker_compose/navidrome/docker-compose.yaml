@@ -12,8 +12,8 @@ services:
       ND_SCANSCHEDULE: 1h
       ND_LOGLEVEL: info
       ND_SESSIONTIMEOUT: 96h
-      ND_SHAREURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?error}"
-      ND_BASEURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?error}"
+      ND_SHAREURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?PUBLIC_URL not set}"
+      ND_BASEURL: "https://${TOP_URL:-music}.${PUBLIC_URL:?PUBLIC_URL not set}"
       ND_SPOTIFY_ID: $ND_SPOTIFY_ID
       ND_SPOTIFY_SECRET: $ND_SPOTIFY_SECRET
       ND_LASTFM_APIKEY: $ND_LASTFM_APIKEY
@@ -28,9 +28,9 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.music-http.entrypoints=web"
-      - "traefik.http.routers.music-http.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.music-http.rule=Host(`${TOP_URL:-music}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.music-https.entrypoints=websecure"
-      - "traefik.http.routers.music-https.rule=Host(`${TOP_URL:-music}.${BASE_URL:?error}`)"
+      - "traefik.http.routers.music-https.rule=Host(`${TOP_URL:-music}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.music-https.tls=true"
       - "traefik.http.routers.music-https.tls.certresolver=production"
       - "traefik.http.routers.music-https.service=music-svc"
@@ -38,7 +38,7 @@ services:
       - "traefik.docker.network=front-end"
       # External magic
       - "traefik.http.routers.music-https-public.entrypoints=websecure-public"
-      - "traefik.http.routers.music-https-public.rule=Host(`${TOP_URL:-music}.${PUBLIC_URL:?error}`)"
+      - "traefik.http.routers.music-https-public.rule=Host(`${TOP_URL:-music}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.music-https-public.tls=true"
       - "traefik.http.routers.music-https-public.tls.certresolver=production"
       - "traefik.http.routers.music-https-public.service=music-svc"
