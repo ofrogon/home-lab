@@ -14,6 +14,8 @@ services:
     #   - 8388:8388/udp # Shadowsocks
     #   - 8085:8085 # qbittorrent
     #   - 9117:9117 # Jackett
+    #   - 8001:8001 # AudioBookRequest
+    #   - 80:80 # Audiobookshelf
     #   - 8191:8191 # Flaresolverr
     #   - 7878:7878 # Radarr
     #   - 8686:8686 # Lidarr
@@ -121,6 +123,22 @@ services:
       - "traefik.http.routers.bazarr-https.tls.certresolver=production"
       - "traefik.http.routers.bazarr-https.service=bazarr-svc"
       - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
+
+      - "traefik.http.routers.audiobookrequest-http.entrypoints=web"
+      - "traefik.http.routers.audiobookrequest-http.rule=Host(`audiobookrequest.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookrequest-https.rule=Host(`audiobookrequest.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookrequest-https.entrypoints=websecure"
+      - "traefik.http.routers.audiobookrequest-https.tls.certresolver=production"
+      - "traefik.http.routers.audiobookrequest-https.service=audiobookrequest-svc"
+      - "traefik.http.services.audiobookrequest-svc.loadbalancer.server.port=8001"
+
+      - "traefik.http.routers.audiobookshelf-http.entrypoints=web"
+      - "traefik.http.routers.audiobookshelf-http.rule=Host(`audiobookshelf.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookshelf-https.rule=Host(`audiobookshelf.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookshelf-https.entrypoints=websecure"
+      - "traefik.http.routers.audiobookshelf-https.tls.certresolver=production"
+      - "traefik.http.routers.audiobookshelf-https.service=audiobookshelf-svc"
+      - "traefik.http.services.audiobookshelf-svc.loadbalancer.server.port=80"
 
       # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?BASE_URL not set}`)'
       # - 'traefik.http.routers.rdt-https.entrypoints=websecure'
@@ -346,6 +364,40 @@ services:
       - 'traefik.http.routers.seer-https-public.tls=true'
       - 'traefik.http.routers.seer-https-public.tls.certresolver=production'
       - 'traefik.http.routers.seer-https-public.service=seer-svc'
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - "/docker/arr-stack/audiobookshelf/config:/config"
+      - "/docker/arr-stack/audiobookshelf/metadata:/metadata"
+      - "/download/audiobooks:/audiobooks"
+      - "/download/podcasts:/podcasts"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
+
+  audiobookrequest:
+    image: markbeep/audiobookrequest:1
+    container_name: audiobookrequest
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      ABR_APP__PORT: 8001
+    volumes:
+      - "/docker/arr-stack/audiobookrequest/config:/config"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:
