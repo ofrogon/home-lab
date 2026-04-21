@@ -68,6 +68,14 @@ services:
       - "traefik.http.routers.qbittorrent-https.service=qbittorrent-svc"
       - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085"
 
+      - "traefik.http.routers.qbittorrent2-http.entrypoints=web"
+      - "traefik.http.routers.qbittorrent2-http.rule=Host(`qbittorrent2.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.qbittorrent2-https.rule=Host(`qbittorrent2.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.qbittorrent2-https.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent2-https.tls.certresolver=production"
+      - "traefik.http.routers.qbittorrent2-https.service=qbittorrent2-svc"
+      - "traefik.http.services.qbittorrent2-svc.loadbalancer.server.port=8086"
+
       - "traefik.http.routers.jackett-http.entrypoints=web"
       - "traefik.http.routers.jackett-http.rule=Host(`jackett.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.jackett-https.rule=Host(`jackett.${BASE_URL:?BASE_URL not set}`)"
@@ -158,6 +166,25 @@ services:
     volumes:
       - "/docker/arr-stack/qbittorrent:/config"
       - "/download/download:/downloads"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
+
+  qbittorrent2:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent2
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      WEBUI_PORT: 8086
+    volumes:
+      - "/docker/arr-stack/qbittorrent2:/config"
+      - "/download/audiobooks:/downloads"
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
@@ -402,3 +429,4 @@ services:
 networks:
   front-end:
     external: true
+
