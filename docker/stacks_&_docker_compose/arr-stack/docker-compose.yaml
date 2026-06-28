@@ -13,7 +13,10 @@ services:
     #   - 8388:8388/tcp # Shadowsocks
     #   - 8388:8388/udp # Shadowsocks
     #   - 8085:8085 # qbittorrent
+    #   - 8086:8086 # qbittorrent2
     #   - 9117:9117 # Jackett
+    #   - 8001:8001 # AudioBookRequest
+    #   - 80:80 # Audiobookshelf
     #   - 8191:8191 # Flaresolverr
     #   - 7878:7878 # Radarr
     #   - 8686:8686 # Lidarr
@@ -65,6 +68,14 @@ services:
       - "traefik.http.routers.qbittorrent-https.tls.certresolver=production"
       - "traefik.http.routers.qbittorrent-https.service=qbittorrent-svc"
       - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8085"
+
+      - "traefik.http.routers.qbittorrent2-http.entrypoints=web"
+      - "traefik.http.routers.qbittorrent2-http.rule=Host(`qbittorrent2.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.qbittorrent2-https.rule=Host(`qbittorrent2.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.qbittorrent2-https.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent2-https.tls.certresolver=production"
+      - "traefik.http.routers.qbittorrent2-https.service=qbittorrent2-svc"
+      - "traefik.http.services.qbittorrent2-svc.loadbalancer.server.port=8086"
 
       - "traefik.http.routers.jackett-http.entrypoints=web"
       - "traefik.http.routers.jackett-http.rule=Host(`jackett.${BASE_URL:?BASE_URL not set}`)"
@@ -122,6 +133,22 @@ services:
       - "traefik.http.routers.bazarr-https.service=bazarr-svc"
       - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
 
+      - "traefik.http.routers.audiobookrequest-http.entrypoints=web"
+      - "traefik.http.routers.audiobookrequest-http.rule=Host(`audiobookrequest.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookrequest-https.rule=Host(`audiobookrequest.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookrequest-https.entrypoints=websecure"
+      - "traefik.http.routers.audiobookrequest-https.tls.certresolver=production"
+      - "traefik.http.routers.audiobookrequest-https.service=audiobookrequest-svc"
+      - "traefik.http.services.audiobookrequest-svc.loadbalancer.server.port=8001"
+
+      - "traefik.http.routers.audiobookshelf-http.entrypoints=web"
+      - "traefik.http.routers.audiobookshelf-http.rule=Host(`audiobookshelf.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookshelf-https.rule=Host(`audiobookshelf.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.audiobookshelf-https.entrypoints=websecure"
+      - "traefik.http.routers.audiobookshelf-https.tls.certresolver=production"
+      - "traefik.http.routers.audiobookshelf-https.service=audiobookshelf-svc"
+      - "traefik.http.services.audiobookshelf-svc.loadbalancer.server.port=80"
+
       # - 'traefik.http.routers.rdt-https.rule=Host(`rdt.${BASE_URL:?BASE_URL not set}`)'
       # - 'traefik.http.routers.rdt-https.entrypoints=websecure'
       # - 'traefik.http.routers.rdt-https.tls.certresolver=production'
@@ -140,6 +167,25 @@ services:
     volumes:
       - "/docker/arr-stack/qbittorrent:/config"
       - "/download/download:/downloads"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
+
+  qbittorrent2:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent2
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+      WEBUI_PORT: 8086
+    volumes:
+      - "/docker/arr-stack/qbittorrent2:/config"
+      - "/download/audiobooks:/downloads"
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
@@ -325,7 +371,7 @@ services:
       PGID: $PGID
       PORT: 5055
     volumes:
-      - "/docker/arr-stack/seer/data:/app/config"
+      - "/docker/arr-stack/jellyseerr/data:/app/config"
     networks:
       - front-end
     labels:
@@ -334,18 +380,52 @@ services:
       - "traefik.docker.network=front-end"
 
       - "traefik.http.routers.seer-http.entrypoints=web"
-      - "traefik.http.routers.seer-http.rule=Host(`seer.${BASE_URL:?BASE_URL not set}`)"
-      - "traefik.http.routers.seer-https.rule=Host(`seer.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.seer-http.rule=Host(`jellyseerr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.seer-https.rule=Host(`jellyseerr.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.seer-https.entrypoints=websecure"
       - "traefik.http.routers.seer-https.tls.certresolver=production"
       - "traefik.http.routers.seer-https.service=seer-svc"
       - "traefik.http.services.seer-svc.loadbalancer.server.port=5055"
       # External magic
       - 'traefik.http.routers.seer-https-public.entrypoints=websecure-public'
-      - 'traefik.http.routers.seer-https-public.rule=Host(`seer.${PUBLIC_URL:?PUBLIC_URL not set}`)'
+      - 'traefik.http.routers.seer-https-public.rule=Host(`jellyseerr.${PUBLIC_URL:?PUBLIC_URL not set}`)'
       - 'traefik.http.routers.seer-https-public.tls=true'
       - 'traefik.http.routers.seer-https-public.tls.certresolver=production'
       - 'traefik.http.routers.seer-https-public.service=seer-svc'
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - "/docker/arr-stack/audiobookshelf/config:/config"
+      - "/docker/arr-stack/audiobookshelf/metadata:/metadata"
+      - "/download/audiobooks:/audiobooks"
+      - "/download/podcasts:/podcasts"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
+
+  audiobookrequest:
+    image: markbeep/audiobookrequest:1
+    container_name: audiobookrequest
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      ABR_APP__PORT: 8001
+    volumes:
+      - "/docker/arr-stack/audiobookrequest/config:/config"
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:
