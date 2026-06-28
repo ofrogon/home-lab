@@ -1,39 +1,79 @@
 ---
+
 services:
-  metube:
-    image: ghcr.io/alexta69/metube
-    container_name: metube
-    restart: unless-stopped
-    user: "${PUID}:${PGID}"
+  gluetun-private:
+    image: qmcgaw/gluetun
+    container_name: gluetun-private
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
     # ports:
-    #   - "8081:8081"
+      # - 8000:8000/tcp # Gluetun web server
+      # - 8388:8388/tcp # Shadowsocks
+      # - 8388:8388/udp # Shadowsocks
+      # - 8081:8081 # MeTube
     environment:
-      TZ: America/Montreal
-      UID: $PUID
-      GID: $PGID
-      DELETE_FILE_ON_TRASHCAN: true
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      VPN_SERVICE_PROVIDER: mullvad
+      VPN_TYPE: wireguard
+      # Wireguard:
+      WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/protonvpn.md
+      WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
+      # Timezone for accurate log times
+      TZ: $TZ
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      UPDATER_PERIOD: 24h
+      SERVER_COUNTRIES: $SERVER_COUNTRIES
+      # FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
-      - "/download/MeTube:/downloads"
+      - "/docker/private/gluetun:/gluetun"
     networks:
       - front-end
+    healthcheck:
+      test: ping -c 1 www.google.com || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.metube-http.entrypoints=web"
-      - "traefik.http.routers.metube-http.rule=Host(`${TOP_URL:-metube}.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.docker.network=front-end"
+
+      - "traefik.http.routers.gluetun-private-https.rule=Host(`gluetun-private.local.abeaudoin.xyz`)"
+      - "traefik.http.routers.gluetun-private-https.entrypoints=websecure"
+      - "traefik.http.routers.gluetun-private-https.tls.certresolver=production"
+      - "traefik.http.routers.gluetun-private-https.service=gluetun-private-svc"
+      - "traefik.http.services.gluetun-private-svc.loadbalancer.server.port=8000"
+
+      - "traefik.http.routers.metube-https.rule=Host(`metube.local.abeaudoin.xyz`)"
       - "traefik.http.routers.metube-https.entrypoints=websecure"
-      - "traefik.http.routers.metube-https.rule=Host(`${TOP_URL:-metube}.${BASE_URL:?BASE_URL not set}`)"
-      - "traefik.http.routers.metube-https.tls=true"
       - "traefik.http.routers.metube-https.tls.certresolver=production"
       - "traefik.http.routers.metube-https.service=metube-svc"
       - "traefik.http.services.metube-svc.loadBalancer.server.port=8081"
-      - "traefik.docker.network=front-end"
-      # External magic
-      - "traefik.http.routers.metube-https-public.entrypoints=websecure-public"
-      - "traefik.http.routers.metube-https-public.rule=Host(`${TOP_URL:-metube}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
-      - "traefik.http.routers.metube-https-public.tls=true"
-      - "traefik.http.routers.metube-https-public.tls.certresolver=production"
-      - "traefik.http.routers.metube-https-public.service=metube-svc"
+
+  metube:
+    image: ghcr.io/alexta69/metube:2026.04.28
+    container_name: metube
+    restart: unless-stopped
+    user: "${METUBE_PUID}:${METUBE_PGID}"
+    # ports:
+    #   - "8081:8081"
+    environment:
+      TZ: $TZ
+      UID: $METUBE_PUID
+      GID: $METUBE_PGID
+      DELETE_FILE_ON_TRASHCAN: true
+    volumes:
+      - "/download/MeTube:/downloads"
+    network_mode: "service:gluetun-private"
+    depends_on:
+      gluetun-private:
+        condition: service_healthy
+    labels:
+      - "diun.enable=true"
 
 networks:
   front-end:
