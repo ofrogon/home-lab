@@ -57,7 +57,7 @@ services:
       - "diun.enable=true"
 
   meilisearch:
-    image: getmeili/meilisearch:v1.37.0
+    image: getmeili/meilisearch:v1.41.0
     container_name: hoarder-meilisearch
     restart: unless-stopped
     user: "${PUID}:${PGID}"
