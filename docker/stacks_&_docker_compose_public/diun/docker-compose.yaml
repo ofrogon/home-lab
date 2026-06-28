@@ -2,10 +2,8 @@ services:
   diun:
     image: crazymax/diun:latest
     container_name: diun
+    restart: always
     command: serve
-    volumes:
-      - "./data:/data"
-      - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       TZ: America/Montreal
       LOG_LEVEL: info
@@ -16,9 +14,11 @@ services:
       DIUN_PROVIDERS_DOCKER: true
       DIUN_WATCH_RUNONSTARTUP: true
       DIUN_WATCH_FIRSTCHECKNOTIF: true
-      DIUN_NOTIF_NTFY_ENDPOINT: https://${TOP_URL:-ntfy}.${PUBLIC_URL:?error}
+      DIUN_NOTIF_NTFY_ENDPOINT: https://${TOP_URL:-ntfy}.${PUBLIC_URL:?PUBLIC_URL not set}
       DIUN_NOTIF_NTFY_TOPIC: diun-public
       DIUN_NOTIF_NTFY_TAGS: whale
       DIUN_NOTIF_NTFY_TIMEOUT: 10s
       DIUN_NOTIF_NTFY_TOKEN: $NTFY_TOKEN
-    restart: always
+    volumes:
+      - "./data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"

@@ -6,6 +6,7 @@ services:
     container_name: crowdsec
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       GID: "${GID-1000}"
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
@@ -18,13 +19,14 @@ services:
     security_opt:
       - no-new-privileges:true
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
   bouncer-traefik:
     image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
     container_name: bouncer-traefik
     restart: unless-stopped
     environment:
+      TZ: America/Montreal
       CROWDSEC_BOUNCER_API_KEY: $CROWDSEC_BOUNCER_API_KEY
       CROWDSEC_AGENT_HOST: crowdsec:8080
     networks:
@@ -34,7 +36,7 @@ services:
     security_opt:
       - no-new-privileges:true
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"
 
 networks:
   front-end:
