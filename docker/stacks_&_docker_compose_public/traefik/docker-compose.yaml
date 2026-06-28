@@ -1,0 +1,36 @@
+---
+
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      # The Web UI (enabled by --api.insecure=true)
+      - 8080:8080
+    environment:
+      TZ: America/Montreal
+      CLOUDFLARE_EMAIL: $CLOUDFLARE_EMAIL
+      CLOUDFLARE_DNS_API_TOKEN: $CLOUDFLARE_DNS_API_TOKEN
+      # TRAEFIK_LOG_LEVEL: DEBUG
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
+      - "/docker/traefik/conf/:/etc/traefik/conf/:ro"
+      - "/docker/traefik/certs/:/etc/traefik/certs/"
+      - "/docker/traefik/logs/:/var/log/traefik/"
+    networks:
+      - front-end
+    env_file:
+      - stack.env
+    dns:
+      - 45.90.28.194
+      - 45.90.30.194
+    labels:
+      - "diun.enable=true"
+
+networks:
+  front-end:
+    external: true
