@@ -403,7 +403,7 @@ services:
       - "/docker/arr-stack/audiobookshelf/config:/config"
       - "/docker/arr-stack/audiobookshelf/metadata:/metadata"
       - "/download/audiobooks:/audiobooks"
-      - "/download/podcasts:/podcasts"
+      - "/medias/audiobook:/podcasts"
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
