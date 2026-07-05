@@ -15,9 +15,6 @@ services:
       - "/docker/uptimekuma:/app/data"
     networks:
       - front-end
-    dns:
-      - 192.168.99.7
-      - 192.168.99.8
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
