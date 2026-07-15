@@ -22,7 +22,7 @@ services:
       ND_ENABLEMEDIAFILECOVERART: false
     volumes:
       - "/docker/navidrome/data:/data"
-      - "/medias/music-nfs:/music:ro"
+      - "/medias/music-nfs:/music"
     networks:
       - front-end
     labels:
