@@ -18,6 +18,7 @@ services:
       ND_SPOTIFY_SECRET: $ND_SPOTIFY_SECRET
       ND_LASTFM_APIKEY: $ND_LASTFM_APIKEY
       ND_LASTFM_SECRET: $ND_LASTFM_SECRET
+      ND_LYRICSPRIORITY: ".ttml,.yaml,.yml,.elrc,.lrc,.srt,.txt,embedded,nd-lyrics"
       ND_ENABLEMEDIAFILECOVERART: false
     volumes:
       - "/docker/navidrome/data:/data"
