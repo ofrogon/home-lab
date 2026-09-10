@@ -23,7 +23,7 @@ services:
     #   - 8787:8787 # Readarr
     #   - 8989:8989 # Sonarr
     #   - 9696:9696 # Prowlarr
-    #   - 9705:9705 # Huntarr
+    #   - 9705:9705 # Huntarr / Newtarr
     #   - 6767:6767 # Bazarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
@@ -124,6 +124,14 @@ services:
       # - 'traefik.http.routers.huntarr-https.tls.certresolver=production'
       # - 'traefik.http.routers.huntarr-https.service=huntarr-svc'
       # - 'traefik.http.services.huntarr-svc.loadbalancer.server.port=9705'
+
+      - "traefik.http.routers.newtarr-http.entrypoints=web"
+      - "traefik.http.routers.newtarr-http.rule=Host(`newtarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.newtarr-https.rule=Host(`newtarr.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.newtarr-https.entrypoints=websecure"
+      - "traefik.http.routers.newtarr-https.tls.certresolver=production"
+      - "traefik.http.routers.newtarr-https.service=newtarr-svc"
+      - "traefik.http.services.newtarr-svc.loadbalancer.server.port=9705"
 
       - "traefik.http.routers.bazarr-http.entrypoints=web"
       - "traefik.http.routers.bazarr-http.rule=Host(`bazarr.${BASE_URL:?BASE_URL not set}`)"
@@ -338,6 +346,23 @@ services:
   #       condition: service_healthy
   #   labels:
   #     - 'diun.enable=true'
+
+  newtarr:
+    image: ghcr.io/elfhosted/newtarr:latest
+    container_name: newtarr
+    restart: unless-stopped
+    environment:
+      TZ: America/Montreal
+      PUID: $PUID
+      PGID: $PGID
+    volumes:
+      - "/docker/arr-stack/newtarr/config:/config"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: "service:gluetun"
+    labels:
+      - "diun.enable=true"
 
   # rdtclient:
   #   image: rogerfar/rdtclient
