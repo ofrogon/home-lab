@@ -16,11 +16,11 @@ services:
       # - 8081:8081 # MeTube
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      VPN_SERVICE_PROVIDER: mullvad
+      VPN_SERVICE_PROVIDER: protonvpn #mullvad
       VPN_TYPE: wireguard
       # Wireguard:
       WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/protonvpn.md
-      WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
+      # WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
       # Timezone for accurate log times
       TZ: $TZ
       # Server list updater
