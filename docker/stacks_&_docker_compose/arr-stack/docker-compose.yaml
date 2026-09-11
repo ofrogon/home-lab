@@ -27,11 +27,11 @@ services:
     #   - 6767:6767 # Bazarr
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      VPN_SERVICE_PROVIDER: mullvad #protonvpn
+      VPN_SERVICE_PROVIDER: protonvpn #mullvad
       VPN_TYPE: wireguard
       # Wireguard:
       WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
-      WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
+      # WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
       # Timezone for accurate log times
       TZ: America/Montreal
       # Server list updater
