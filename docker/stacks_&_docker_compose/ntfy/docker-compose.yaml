@@ -11,13 +11,44 @@ services:
     #      - 80:80
     environment:
       TZ: America/Montreal
-      NTFY_BASE_URL: https://ntfy.${BASE_URL:?base url required}
+
+      # --- Identité / réseau ---------------------------------------------
+      NTFY_BASE_URL: https://${TOP_URL:-ntfy}.${BASE_URL:?base url required}
+      # Port non privilégié : cohérent avec `user:` (pas de bind sur :80)
+      NTFY_LISTEN_HTTP: ":2586"
+      NTFY_BEHIND_PROXY: "true"
+
+      # --- Stockage ------------------------------------------------------
       NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+      NTFY_CACHE_DURATION: "12h"
       NTFY_AUTH_FILE: /var/cache/ntfy/auth.db
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
-      NTFY_BEHIND_PROXY: true
+
+      # --- Pièces jointes (limites < 100 MB du tunnel Cloudflare) --------
       NTFY_ATTACHMENT_CACHE_DIR: /var/cache/ntfy/attachments
-      NTFY_ENABLE_LOGIN: true
+      NTFY_ATTACHMENT_TOTAL_SIZE_LIMIT: "5G"
+      NTFY_ATTACHMENT_FILE_SIZE_LIMIT: "50M"
+      NTFY_ATTACHMENT_EXPIRY_DURATION: "12h"
+
+      # --- Comptes -------------------------------------------------------
+      NTFY_ENABLE_LOGIN: "true"
+      NTFY_ENABLE_SIGNUP: "false"
+      NTFY_ENABLE_RESERVATIONS: "true"
+
+      # --- iOS : indispensable pour recevoir via APNs --------------------
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+
+      # --- Web Push (notifications navigateur, onglet fermé) -------------
+      # Générer les clés une fois : voir étapes manuelles
+      NTFY_WEB_PUSH_PUBLIC_KEY: ${NTFY_WEB_PUSH_PUBLIC_KEY:?web push public key required}
+      NTFY_WEB_PUSH_PRIVATE_KEY: ${NTFY_WEB_PUSH_PRIVATE_KEY:?web push private key required}
+      NTFY_WEB_PUSH_FILE: /var/cache/ntfy/webpush.db
+      NTFY_WEB_PUSH_EMAIL_ADDRESS: ${NTFY_WEB_PUSH_EMAIL:?web push contact email required}
+
+      # --- Divers --------------------------------------------------------
+      NTFY_KEEPALIVE_INTERVAL: "45s"
+      NTFY_MANAGER_INTERVAL: "1h"
+      NTFY_LOG_LEVEL: info
     volumes:
       - /docker/ntfy/cache:/var/cache/ntfy
       - /docker/ntfy/etc:/etc/ntfy
@@ -43,7 +74,7 @@ services:
       - "traefik.http.routers.ntfy-https.tls=true"
       - "traefik.http.routers.ntfy-https.tls.certresolver=production"
       - "traefik.http.routers.ntfy-https.service=ntfy-svc"
-      - "traefik.http.services.ntfy-svc.loadBalancer.server.port=80"
+      - "traefik.http.services.ntfy-svc.loadBalancer.server.port=2586"
       - "traefik.docker.network=front-end"
 
 networks:
