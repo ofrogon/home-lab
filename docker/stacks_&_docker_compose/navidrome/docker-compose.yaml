@@ -4,7 +4,7 @@ services:
     image: deluan/navidrome:latest
     container_name: navidrome
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # should be owner of volumes
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}" # should be owner of volumes
     # ports:
     #  - "4533:4533"
     environment:
@@ -25,6 +25,13 @@ services:
       - "/medias/music-nfs:/music"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

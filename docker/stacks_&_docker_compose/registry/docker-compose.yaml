@@ -17,6 +17,13 @@ services:
       - "/docker/registry/data:/data"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

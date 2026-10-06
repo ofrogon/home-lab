@@ -10,7 +10,7 @@ services:
     environment:
       TZ: America/Montreal
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/"]
       interval: 30s
       timeout: 5s
       retries: 3

@@ -9,8 +9,8 @@ services:
       - "2221:22"
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: "db:5432"
       GITEA__database__NAME: gitea
@@ -30,6 +30,12 @@ services:
     networks:
       - front-end
       - gitea-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -60,6 +66,12 @@ services:
       retries: 5
     networks:
       - gitea-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

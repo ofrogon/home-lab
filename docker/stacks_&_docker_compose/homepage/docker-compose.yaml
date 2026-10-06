@@ -4,13 +4,13 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     # ports:
     #  - 3000:3000
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       HOMEPAGE_ALLOWED_HOSTS: "${TOP_URL:-dash}.${BASE_URL:?BASE_URL not set}"
     volumes:
       - "/docker/homepage/config:/app/config"
@@ -18,6 +18,12 @@ services:
       - "/docker/homepage/images:/app/public/images"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

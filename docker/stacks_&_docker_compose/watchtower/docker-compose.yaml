@@ -9,6 +9,7 @@ services:
       TZ: America/Montreal
       WATCHTOWER_LABEL_ENABLE: true
       WATCHTOWER_CLEANUP: false
+      WATCHTOWER_MONITOR_ONLY: true
       WATCHTOWER_NOTIFICATIONS: gotify
       WATCHTOWER_NOTIFICATION_GOTIFY_URL: ${GOTIFY_URL:?GOTIFY_URL not set}
       WATCHTOWER_NOTIFICATION_GOTIFY_TOKEN: ${GOTIFY_TOKEN:?GOTIFY_TOKEN not set}
@@ -16,5 +17,12 @@ services:
       WATCHTOWER_NOTIFICATIONS_HOSTNAME: ${WATCHTOWER_NOTIFICATIONS_HOSTNAME:?WATCHTOWER_NOTIFICATIONS_HOSTNAME not set}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
-      - 'diun.enable=true'
+      - "diun.enable=true"

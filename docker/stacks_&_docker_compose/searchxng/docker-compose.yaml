@@ -14,11 +14,13 @@ services:
       retries: 5
     networks:
       - searxng-internal
+    security_opt:
+      - no-new-privileges:true
     logging:
       driver: "json-file"
       options:
-        max-size: "1m"
-        max-file: "1"
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -45,11 +47,13 @@ services:
     networks:
       - front-end
       - searxng-internal
+    security_opt:
+      - no-new-privileges:true
     logging:
       driver: "json-file"
       options:
-        max-size: "1m"
-        max-file: "1"
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

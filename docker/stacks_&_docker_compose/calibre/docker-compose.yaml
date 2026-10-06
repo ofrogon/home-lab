@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       DOCKER_MODS: "linuxserver/mods:universal-calibre"
       OAUTHLIB_RELAX_TOKEN_SCOPE: 1
     volumes:
@@ -15,13 +15,19 @@ services:
       - /calibre/calibre:/books
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.calibre-alex-http.entrypoints=web"
-      - "traefik.http.routers.calibre-alex-http.rule=Host(`calibre.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-alex-http.rule=Host(`calibre.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-alex-https.entrypoints=websecure"
-      - "traefik.http.routers.calibre-alex-https.rule=Host(`calibre.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-alex-https.rule=Host(`calibre.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-alex-https.tls=true"
       - "traefik.http.routers.calibre-alex-https.tls.certresolver=production"
       - "traefik.http.routers.calibre-alex-https.service=calibre-alex-svc"
@@ -34,8 +40,8 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       DOCKER_MODS: "linuxserver/mods:universal-calibre"
       OAUTHLIB_RELAX_TOKEN_SCOPE: 1
     volumes:
@@ -43,13 +49,19 @@ services:
       - /calibre/andre:/books
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.calibre-andre-http.entrypoints=web"
-      - "traefik.http.routers.calibre-andre-http.rule=Host(`calibre-andre.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-andre-http.rule=Host(`calibre-andre.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-andre-https.entrypoints=websecure"
-      - "traefik.http.routers.calibre-andre-https.rule=Host(`calibre-andre.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-andre-https.rule=Host(`calibre-andre.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-andre-https.tls=true"
       - "traefik.http.routers.calibre-andre-https.tls.certresolver=production"
       - "traefik.http.routers.calibre-andre-https.service=calibre-andre-svc"
@@ -62,8 +74,8 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       DOCKER_MODS: "linuxserver/mods:universal-calibre"
       OAUTHLIB_RELAX_TOKEN_SCOPE: 1
     volumes:
@@ -71,13 +83,19 @@ services:
       - /calibre/nsfw:/books
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.calibre-nsfw-http.entrypoints=web"
-      - "traefik.http.routers.calibre-nsfw-http.rule=Host(`calibre-nsfw.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-nsfw-http.rule=Host(`calibre-nsfw.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-nsfw-https.entrypoints=websecure"
-      - "traefik.http.routers.calibre-nsfw-https.rule=Host(`calibre-nsfw.${BASE_URL:?base url required}`)"
+      - "traefik.http.routers.calibre-nsfw-https.rule=Host(`calibre-nsfw.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.calibre-nsfw-https.tls=true"
       - "traefik.http.routers.calibre-nsfw-https.tls.certresolver=production"
       - "traefik.http.routers.calibre-nsfw-https.service=calibre-nsfw-svc"

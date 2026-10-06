@@ -9,13 +9,20 @@ services:
     #      - "8282:80/tcp"
     environment:
       TZ: America/Montreal
-      UID: $PUID
-      GID: $PGID
+      UID: ${PUID:?PUID not set}
+      GID: ${PGID:?PGID not set}
     volumes:
       - "/docker/wallos/db:/var/www/html/db"
       - "/docker/wallos/logos:/var/www/html/images/uploads/logos"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

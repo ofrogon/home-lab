@@ -4,25 +4,31 @@ services:
     image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
     container_name: hoarder
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     # ports:
     #  - 3000:3000
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       MEILI_ADDR: http://meilisearch:7700
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?MEILI_MASTER_KEY not set}
       BROWSER_WEB_URL: http://chrome:9222
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?NEXTAUTH_SECRET not set}
       NEXTAUTH_URL: https://${TOP_URL:-karakeep}.${BASE_URL:?BASE_URL not set}
-      OPENAI_API_KEY: $OPENAI_API_KEY
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       DATA_DIR: /data
     volumes:
       - "/docker/hoarder/data/:/data"
     networks:
       - front-end
       - karakeep-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -47,14 +53,20 @@ services:
       - --remote-debugging-address=0.0.0.0
       - --remote-debugging-port=9222
       - --hide-scrollbars
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     networks:
       - karakeep-internal
       - karakeep-egress
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -62,17 +74,23 @@ services:
     image: getmeili/meilisearch:v1.41.0
     container_name: hoarder-meilisearch
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       MEILI_NO_ANALYTICS: "true"
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?MEILI_MASTER_KEY not set}
     volumes:
       - meilisearch:/meili_data
     networks:
       - karakeep-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

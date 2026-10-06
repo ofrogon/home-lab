@@ -3,12 +3,28 @@ services:
     image: rustdesk/rustdesk-server:latest
     container_name: hbbs
     restart: unless-stopped
-    command: hbbs
+    stop_grace_period: 30s
+    command: hbbs -r hbbr:21117
+    ports:
+      - "21115:21115/tcp"
+      - "21116:21116/tcp"
+      - "21116:21116/udp"
+      - "21118:21118/tcp"
+    environment:
+      TZ: America/Montreal
     volumes:
       - /docker/rustdesk/hhbs:/root
-    network_mode: "host"
     depends_on:
       - hbbr
+    networks:
+      - rustdesk-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -16,9 +32,27 @@ services:
     image: rustdesk/rustdesk-server:latest
     container_name: hbbr
     restart: unless-stopped
+    stop_grace_period: 30s
     command: hbbr
+    ports:
+      - "21117:21117/tcp"
+      - "21119:21119/tcp"
+    environment:
+      TZ: America/Montreal
     volumes:
       - /docker/rustdesk/hhbr:/root
-    network_mode: "host"
+    networks:
+      - rustdesk-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
+
+networks:
+  rustdesk-internal:
+    driver: bridge

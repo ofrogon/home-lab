@@ -14,5 +14,11 @@ services:
       - /docker/bind9/config:/etc/bind
       - /docker/bind9/cache:/var/cache/bind
       - /docker/bind9/records:/var/log/bind
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"

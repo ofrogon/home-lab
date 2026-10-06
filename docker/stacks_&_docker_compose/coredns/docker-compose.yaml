@@ -12,5 +12,11 @@ services:
       TZ: America/Montreal
     volumes:
       - "/docker/coredns:/etc/coredns"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"

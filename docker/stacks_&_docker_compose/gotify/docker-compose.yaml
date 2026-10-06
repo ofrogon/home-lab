@@ -4,18 +4,24 @@ services:
     image: gotify/server
     container_name: gotify
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     # ports:
     #  - 8080:80
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       GOTIFY_DEFAULTUSER_PASS: ${DFPASS:?DFPASS not set}
     volumes:
       - "/docker/gotify:/app/data"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

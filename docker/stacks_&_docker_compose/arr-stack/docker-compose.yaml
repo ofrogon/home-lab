@@ -30,24 +30,30 @@ services:
       VPN_SERVICE_PROVIDER: protonvpn #mullvad
       VPN_TYPE: wireguard
       # Wireguard:
-      WIREGUARD_PRIVATE_KEY: $WIREGUARD_PRIVATE_KEY # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY:?WIREGUARD_PRIVATE_KEY not set} # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/nordvpn.md#obtain-your-wireguard-private-key
       # WIREGUARD_ADDRESSES: $WIREGUARD_ADDRESSES
       # Timezone for accurate log times
       TZ: America/Montreal
       # Server list updater
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       UPDATER_PERIOD: 24h
-      SERVER_COUNTRIES: $SERVER_COUNTRIES
+      SERVER_COUNTRIES: ${SERVER_COUNTRIES:?SERVER_COUNTRIES not set}
       # FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
       - "/docker/arr-stack/gluetun:/gluetun"
-    networks:
-      - front-end
     healthcheck:
       test: ping -c 1 www.google.com || exit 1
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -169,16 +175,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       WEBUI_PORT: 8085
     volumes:
       - "/docker/arr-stack/qbittorrent:/config"
       - "/download/download:/downloads"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -188,16 +200,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       WEBUI_PORT: 8086
     volumes:
       - "/docker/arr-stack/qbittorrent2:/config"
       - "/download/audiobooks:/downloads"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -207,17 +225,23 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       AUTO_UPDATE: true #optional
       #RUN_OPTS:  #optional
     volumes:
       - "/docker/arr-stack/jackett/data:/config"
       - "/download/download:/downloads"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -228,12 +252,18 @@ services:
     environment:
       CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
-    network_mode: "service:gluetun"
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -243,16 +273,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/radarr/data:/config"
       - "/download/radarr/movies:/movies" #optional
       - "/download/download:/downloads" #optional
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -262,16 +298,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/lidarr/data:/config"
       - "/download/lidarr/music:/music" #optional
       - "/download/download:/downloads" #optional
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -281,16 +323,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/sonarr/data:/config"
       - "/download/sonarr/tvseries:/tv" #optional
       - "/download/download:/downloads" #optional
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -300,16 +348,22 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/bazarr/config:/config"
       - "/download/radarr/movies:/movies" #optional
       - "/download/sonarr/tvseries:/tv" #optional
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -319,14 +373,20 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/prowlarr/data:/config"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -334,16 +394,22 @@ services:
   #   image: ghcr.io/plexguide/huntarr:latest
   #   container_name: huntarr
   #   restart: unless-stopped
-  #   volumes:
-  #     - '/docker/arr-stack/huntarr:/config'
   #   environment:
   #     TZ: America/Montreal
-  #     PUID: $PUID
-  #     PGID: $PGID
-  #   network_mode: 'service:gluetun'
+  #     PUID: ${PUID:?PUID not set}
+  #     PGID: ${PGID:?PGID not set}
+  #   volumes:
+  #     - '/docker/arr-stack/huntarr:/config'
   #   depends_on:
   #     gluetun:
   #       condition: service_healthy
+  #   network_mode: 'service:gluetun'
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   logging:
+  #     options:
+  #       max-size: 10m
+  #       max-file: "3"
   #   labels:
   #     - 'diun.enable=true'
 
@@ -353,14 +419,20 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/arr-stack/neutarr/config:/config"
     depends_on:
       gluetun:
         condition: service_healthy
     network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -370,19 +442,22 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     TZ: America/Montreal
-  #     PUID: $PUID
-  #     PGID: $PGID
+  #     PUID: ${PUID:?PUID not set}
+  #     PGID: ${PGID:?PGID not set}
   #   volumes:
   #     - '/docker/arr-stack/rdtclient:/data/db'
   #     - '/download/download:/data/downloads' #optional
+  #   depends_on:
+  #     gluetun:
+  #       condition: service_healthy
+  #   network_mode: 'service:gluetun'
+  #   security_opt:
+  #     - no-new-privileges:true
   #   logging:
   #     driver: json-file
   #     options:
   #       max-size: 10m
-  #   network_mode: 'service:gluetun'
-  #   depends_on:
-  #     gluetun:
-  #       condition: service_healthy
+  #       max-file: "3"
   #   labels:
   #     - 'diun.enable=true'
   
@@ -392,13 +467,19 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       PORT: 5055
     volumes:
       - "/docker/arr-stack/jellyseerr/data:/app/config"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -429,10 +510,16 @@ services:
       - "/docker/arr-stack/audiobookshelf/metadata:/metadata"
       - "/download/audiobooks:/audiobooks"
       - "/medias/audiobook:/podcasts"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -445,10 +532,16 @@ services:
       ABR_APP__PORT: 8001
     volumes:
       - "/docker/arr-stack/audiobookrequest/config:/config"
-    network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
+    network_mode: "service:gluetun"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

@@ -22,13 +22,20 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
-      - "/docker/traefik/conf/:/etc/traefik/conf/"
+      - "/docker/traefik/conf/:/etc/traefik/conf/:ro"
       - "/docker/traefik/certs/:/etc/traefik/certs/"
       - "/docker/traefik/logs/:/var/log/traefik/"
     env_file:
       - stack.env
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

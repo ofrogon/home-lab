@@ -4,13 +4,13 @@ services:
     image: docker.io/actualbudget/actual-server:latest
     container_name: actual
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     # ports:
     #   - 5006:5006
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       # Uncomment any of the lines below to set configuration options.
       # ACTUAL_HTTPS_KEY: /data/selfhost.key
       # ACTUAL_HTTPS_CERT: /data/selfhost.crt
@@ -30,6 +30,12 @@ services:
       start_period: 20s
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

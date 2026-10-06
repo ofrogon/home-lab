@@ -7,12 +7,18 @@ services:
     command: tunnel run
     environment:
       TZ: America/Montreal
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?tunnel token required}
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?TUNNEL_TOKEN not set}
     networks:
-      - public
+      - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
 networks:
-  public:
+  front-end:
     external: true

@@ -6,9 +6,6 @@ services:
     restart: on-failure
     #    ports:
     #      - "${HTTP_PORT:-8080}:80"
-    depends_on:
-      monkeytype-backend:
-        condition: service_healthy
     environment:
       TZ: America/Montreal
       FIREBASE_APIKEY: ${FIREBASE_APIKEY:-}
@@ -17,10 +14,19 @@ services:
       FIREBASE_STORAGEBUCKET: ${FIREBASE_STORAGEBUCKET:-}
       FIREBASE_MESSAGINGSENDERID: ${FIREBASE_MESSAGINGSENDERID:-}
       FIREBASE_APPID: ${FIREBASE_APPID:-}
-      MONKEYTYPE_BACKENDURL: ${MONKEYTYPE_BACKENDURL}
+      MONKEYTYPE_BACKENDURL: ${MONKEYTYPE_BACKENDURL:?MONKEYTYPE_BACKENDURL not set}
       RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY:-}
+    depends_on:
+      monkeytype-backend:
+        condition: service_healthy
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -46,7 +52,7 @@ services:
       DB_NAME: monkeytype
       DB_URI: mongodb://monkeytype-mongodb:27017
       REDIS_URI: redis://monkeytype-redis:6379
-      FRONTEND_URL: ${MONKEYTYPE_FRONTENDURL}
+      FRONTEND_URL: ${MONKEYTYPE_FRONTENDURL:?MONKEYTYPE_FRONTENDURL not set}
       RECAPTCHA_SECRET: ${RECAPTCHA_SECRET:-}
       EMAIL_HOST: ${EMAIL_HOST:-}
       EMAIL_PORT: ${EMAIL_PORT:-}
@@ -77,6 +83,12 @@ services:
     networks:
       - front-end
       - monkeytype-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -109,6 +121,14 @@ services:
       start_period: 10s
     networks:
       - monkeytype-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
 
   monkeytype-mongodb:
     image: mongo:5.0.13
@@ -129,6 +149,14 @@ services:
       start_period: 10s
     networks:
       - monkeytype-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
 
 volumes:
   mongo-data:

@@ -23,6 +23,13 @@ services:
     networks:
       - teamspeak-internal
       - teamspeak-public
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -44,6 +51,13 @@ services:
       retries: 10
     networks:
       - teamspeak-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

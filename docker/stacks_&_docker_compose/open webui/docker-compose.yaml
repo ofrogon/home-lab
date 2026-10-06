@@ -9,13 +9,20 @@ services:
     #  - "3000:8080"
     environment:
       TZ: America/Montreal
-      UID: $PUID
-      GID: $PGID
-      OLLAMA_BASE_URL: $OLLAMA_BASE_URL
+      UID: ${PUID:?PUID not set}
+      GID: ${PGID:?PGID not set}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:?OLLAMA_BASE_URL not set}
     volumes:
       - "/docker/openwebui/data:/app/backend/data"
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

@@ -4,11 +4,11 @@ services:
     image: influxdb:2
     container_name: influxdb
     restart: unless-stopped
-    user: "${PUID}:${PGID}"
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}"
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     volumes:
       - "/docker/influxdb/data:/app/data"
       - "/docker/influxdb/influxdb2-data:/var/lib/influxdb2"
@@ -16,6 +16,12 @@ services:
     networks:
       - front-end
       - back-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

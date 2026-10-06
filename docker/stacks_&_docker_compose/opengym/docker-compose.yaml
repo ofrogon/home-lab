@@ -22,6 +22,13 @@ services:
     volumes:
       - /docker/opengym/out/img:/out/img
       - /docker/opengym/out/gif:/out/gif
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -33,12 +40,22 @@ services:
       TZ: America/Montreal
       PORT: 3000 # internal port (nginx proxies here) — do not change
       DATA_DIR: /data
+      RP_ID: ${RP_ID:?RP_ID not set}
+      ORIGIN: ${ORIGIN:?ORIGIN not set}
+      RP_NAME: ${RP_NAME:-openGym}
     volumes:
       - /docker/opengym/data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
     env_file:
       - stack.env
     networks:
       - opengym-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
@@ -58,6 +75,13 @@ services:
     networks:
       - front-end
       - opengym-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

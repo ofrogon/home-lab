@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
       # SERVER_NAME: navidrome # pre defined server name
       # SERVER_LOCK: true # When true AND name/type/url are set, only username/password can be toggled
       # SERVER_TYPE: navidrome # jellyfin also works
@@ -19,13 +19,19 @@ services:
       - stack.env
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.feishin-http.entrypoints=web"
-      - "traefik.http.routers.feishin-http.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error missing BASE_URL}`)"
+      - "traefik.http.routers.feishin-http.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.feishin-https.entrypoints=websecure"
-      - "traefik.http.routers.feishin-https.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?error missing BASE_URL}`)"
+      - "traefik.http.routers.feishin-https.rule=Host(`${TOP_URL:-feishin}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.feishin-https.tls=true"
       - "traefik.http.routers.feishin-https.tls.certresolver=production"
       - "traefik.http.routers.feishin-https.service=feishin-svc"
@@ -33,7 +39,7 @@ services:
       - "traefik.docker.network=front-end"
       # External magic
       - "traefik.http.routers.feishin-https-public.entrypoints=websecurepublic"
-      - "traefik.http.routers.feishin-https-public.rule=Host(`${TOP_URL:-player}.${PUBLIC_URL:?error missing PUBLIC_URL}`)"
+      - "traefik.http.routers.feishin-https-public.rule=Host(`${TOP_URL:-player}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.feishin-https-public.tls=true"
       - "traefik.http.routers.feishin-https-public.tls.certresolver=production"
       - "traefik.http.routers.feishin-https-public.service=feishin-svc"

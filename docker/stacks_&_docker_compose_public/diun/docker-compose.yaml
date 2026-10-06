@@ -32,10 +32,13 @@ services:
       diun-socket-proxy:
         condition: service_healthy
     networks:
-      - default
-      - socket-proxy
+      - diun-egress
+      - diun-socket
     security_opt:
       - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
     logging:
       options:
         max-size: 10m
@@ -63,9 +66,12 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      - socket-proxy
+      - diun-socket
     security_opt:
       - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /run
     logging:
       options:
         max-size: 10m
@@ -74,6 +80,6 @@ services:
       - "diun.enable=true"
 
 networks:
-  default:
-  socket-proxy:
+  diun-egress:
+  diun-socket:
     internal: true

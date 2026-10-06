@@ -4,7 +4,7 @@ services:
     image: johannesjo/super-productivity:latest
     container_name: superproductivity
     restart: unless-stopped
-    user: "${PUID}:${PGID}" # should be owner of volumes
+    user: "${PUID:?PUID not set}:${PGID:?PGID not set}" # should be owner of volumes
     #ports:
     #  - "80:80"
     environment:
@@ -12,6 +12,13 @@ services:
       TZ: America/Montreal
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

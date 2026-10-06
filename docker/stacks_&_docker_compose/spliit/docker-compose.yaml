@@ -17,6 +17,13 @@ services:
     networks:
       - front-end
       - spliit-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.spliit-http.entrypoints=web"
@@ -52,6 +59,13 @@ services:
       retries: 5
     networks:
       - spliit-internal
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
