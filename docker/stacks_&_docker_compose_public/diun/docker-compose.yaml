@@ -72,6 +72,7 @@ services:
     read_only: true
     tmpfs:
       - /run
+      - /tmp
     logging:
       options:
         max-size: 10m
