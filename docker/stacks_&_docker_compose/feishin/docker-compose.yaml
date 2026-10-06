@@ -32,7 +32,7 @@ services:
       - "traefik.http.services.feishin-svc.loadBalancer.server.port=9180"
       - "traefik.docker.network=front-end"
       # External magic
-      - "traefik.http.routers.feishin-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.feishin-https-public.entrypoints=websecurepublic"
       - "traefik.http.routers.feishin-https-public.rule=Host(`${TOP_URL:-player}.${PUBLIC_URL:?error missing PUBLIC_URL}`)"
       - "traefik.http.routers.feishin-https-public.tls=true"
       - "traefik.http.routers.feishin-https-public.tls.certresolver=production"

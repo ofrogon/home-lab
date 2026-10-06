@@ -27,6 +27,7 @@ services:
       - "traefik.http.routers.vaultwarden-https.tls.certresolver=production"
       - "traefik.http.routers.vaultwarden-https.service=vaultwarden-svc"
       - "traefik.http.services.vaultwarden-svc.loadBalancer.server.port=80"
+      - "traefik.docker.network=front-end"
 
 networks:
   front-end:

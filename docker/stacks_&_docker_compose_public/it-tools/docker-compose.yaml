@@ -9,16 +9,24 @@ services:
     #    - '8080:8080'
     environment:
       TZ: America/Montreal
-    #   PUID: $PUID
-    #   PGID: $PGID
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.ittools-http.entrypoints=web"
-      - "traefik.http.routers.ittools-http.rule=Host(`${TOP_URL:-it-tools}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
-      - "traefik.http.routers.ittools-https.entrypoints=websecure"
+      - "traefik.http.routers.ittools-https.entrypoints=websecurepublic"
       - "traefik.http.routers.ittools-https.rule=Host(`${TOP_URL:-it-tools}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.ittools-https.tls=true"
       - "traefik.http.routers.ittools-https.tls.certresolver=production"

@@ -25,7 +25,7 @@ services:
       - "traefik.http.services.ittools-svc.loadBalancer.server.port=8080"
       - "traefik.docker.network=front-end"
       # External magic
-      - "traefik.http.routers.ittools-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.ittools-https-public.entrypoints=websecurepublic"
       - "traefik.http.routers.ittools-https-public.rule=Host(`${TOP_URL:-it-tools}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.ittools-https-public.tls=true"
       - "traefik.http.routers.ittools-https-public.tls.certresolver=production"

@@ -2,42 +2,73 @@
 
 services:
   crowdsec:
-    image: crowdsecurity/crowdsec:latest
+    image: crowdsecurity/crowdsec:v1.8.1
     container_name: crowdsec
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      GID: "${GID-1000}"
+      GID: "${GID:-1000}"
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
       #- /docker/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /docker/crowdsec/db:/var/lib/crowdsec/data/
       - /docker/crowdsec/config:/etc/crowdsec/
+      - ./acquis.yaml:/etc/crowdsec/acquis.d/traefik.yaml:ro
       - /docker/traefik/logs:/var/log/traefik/:ro
+    healthcheck:
+      test: ["CMD", "cscli", "lapi", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
-      - front-end
+      - back-end
     security_opt:
       - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
   bouncer-traefik:
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
+    image: samuelba/traefik_crowdsec_bouncer:v0.3.0
     container_name: bouncer-traefik
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      CROWDSEC_BOUNCER_API_KEY: $CROWDSEC_BOUNCER_API_KEY
-      CROWDSEC_AGENT_HOST: crowdsec:8080
+      CROWDSEC_API_KEY: ${CROWDSEC_BOUNCER_API_KEY:?CROWDSEC_BOUNCER_API_KEY not set}
+      CROWDSEC_HOST: crowdsec:8080
+      CROWDSEC_HTTPS: "false"
+      CROWDSEC_MODE: stream
+      CROWDSEC_TRUSTED_PROXIES: ${CROWDSEC_TRUSTED_PROXIES:?CROWDSEC_TRUSTED_PROXIES not set}
+      STREAM_UPDATE_INTERVAL: "5"
+      PORT: "8080"
+      LOG_LEVEL: warn
+    healthcheck:
+      test: ["CMD", "/app/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      crowdsec:
+        condition: service_healthy
     networks:
       - front-end
-    depends_on:
-      - crowdsec
+      - back-end
     security_opt:
       - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
+    external: true
+  back-end:
     external: true

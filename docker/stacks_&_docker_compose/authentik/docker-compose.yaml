@@ -11,8 +11,6 @@ services:
       TZ: America/Montreal
     volumes:
       - "database:/var/lib/postgresql/data"
-    env_file:
-      - stack.env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
@@ -20,7 +18,7 @@ services:
       retries: 5
       timeout: 5s
     networks:
-      - back-end
+      - authentik-internal
     labels:
       - "diun.enable=true"
 
@@ -40,7 +38,7 @@ services:
       retries: 5
       timeout: 3s
     networks:
-      - back-end
+      - authentik-internal
     labels:
       - "diun.enable=true"
 
@@ -75,8 +73,6 @@ services:
     volumes:
       - "/docker/authentik/media:/media"
       - "/docker/authentik/custom-templates:/templates"
-    env_file:
-      - stack.env
     depends_on:
       postgresql:
         condition: service_healthy
@@ -84,7 +80,7 @@ services:
         condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - authentik-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -134,15 +130,14 @@ services:
       - "/docker/authentik/media:/media"
       - "/docker/authentik/certs:/certs"
       - "/docker/authentik/custom-templates:/templates"
-    env_file:
-      - stack.env
     depends_on:
       postgresql:
         condition: service_healthy
       redis:
         condition: service_healthy
     networks:
-      - back-end
+      - authentik-internal
+      - authentik-egress
     labels:
       - "diun.enable=true"
 
@@ -155,5 +150,6 @@ volumes:
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  authentik-internal:
+    internal: true
+  authentik-egress:

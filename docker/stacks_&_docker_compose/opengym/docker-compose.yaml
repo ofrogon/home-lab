@@ -5,10 +5,7 @@ services:
   # ~140 MB, from github.com/hasaneyldrm/exercises-dataset (CC).
   media:
     image: alpine/git
-    volumes:
-      - /docker/opengym/out/img:/out/img
-      - /docker/opengym/out/gif:/out/gif
-    entrypoint: ["/bin/sh", "-c"]
+    restart: "no"
     command:
       - |
         if [ -z "$$(ls -A /out/img 2>/dev/null)" ]; then
@@ -19,42 +16,48 @@ services:
         else
           echo "✓ Exercise media already present — skipping download."
         fi
-    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - /docker/opengym/out/img:/out/img
+      - /docker/opengym/out/gif:/out/gif
+    labels:
+      - "diun.enable=true"
 
   # Passkey auth + per-user data (Node, no framework).
-  # image: prebuilt (docker compose pull). build: from source (docker compose up --build).
   api:
     image: ghcr.io/duartesantos8/opengym-api:latest
-    build: ./api
     restart: unless-stopped
-    env_file: .env
     environment:
-      - PORT=3000            # internal port (nginx proxies here) — do not change
-      - DATA_DIR=/data
+      TZ: America/Montreal
+      PORT: 3000 # internal port (nginx proxies here) — do not change
+      DATA_DIR: /data
     volumes:
       - /docker/opengym/data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
+    env_file:
+      - stack.env
+    networks:
+      - opengym-internal
+    labels:
+      - "diun.enable=true"
 
-  # Builds the React frontend (multi-stage) and serves it, proxying /api → api
+  # Serves the React frontend, proxying /api → api
   # and the exercise media from the shared volume. Single origin for passkeys.
   web:
     image: ghcr.io/duartesantos8/opengym-web:latest
-    build:
-      context: .
-      dockerfile: web/Dockerfile
     restart: unless-stopped
+    volumes:
+      - /docker/opengym/out/img:/usr/share/nginx/html/img:ro
+      - /docker/opengym/out/gif:/usr/share/nginx/html/gif:ro
     depends_on:
       media:
         condition: service_completed_successfully
       api:
         condition: service_started
-    ports:
-      - "${WEB_PORT:-8080}:80"
-    volumes:
-      - /docker/opengym/out/img:/usr/share/nginx/html/img:ro
-      - /docker/opengym/out/gif:/usr/share/nginx/html/gif:ro
     networks:
       - front-end
-      - back-end
+      - opengym-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -65,5 +68,11 @@ services:
       - "traefik.http.routers.opengym-https.tls=true"
       - "traefik.http.routers.opengym-https.tls.certresolver=production"
       - "traefik.http.routers.opengym-https.service=opengym-svc"
-      - "traefik.http.services.opengym-svc.loadBalancer.server.port=3000"
+      - "traefik.http.services.opengym-svc.loadBalancer.server.port=80"
       - "traefik.docker.network=front-end"
+
+networks:
+  front-end:
+    external: true
+  opengym-internal:
+    internal: true

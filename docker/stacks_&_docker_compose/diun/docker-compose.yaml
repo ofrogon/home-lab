@@ -18,7 +18,9 @@ services:
       DIUN_NOTIF_NTFY_TOPIC: diun
       DIUN_NOTIF_NTFY_TAGS: whale
       DIUN_NOTIF_NTFY_TIMEOUT: 10s
-      DIUN_NOTIF_NTFY_TOKEN: $NTFY_TOKEN
+      DIUN_NOTIF_NTFY_TOKEN: ${NTFY_TOKEN:?NTFY_TOKEN not set}
     volumes:
-      - "./data:/data"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/docker/diun/data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "diun.enable=true"

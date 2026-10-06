@@ -2,35 +2,82 @@
 
 services:
   traefik:
-    image: traefik:v3.7
+    image: traefik:v3.7.13
     container_name: traefik
     restart: unless-stopped
     ports:
       - 80:80
       - 443:443
-      # The Web UI (enabled by --api.insecure=true)
-      - 8080:8080
     environment:
       TZ: America/Montreal
-      CLOUDFLARE_EMAIL: $CLOUDFLARE_EMAIL
-      CLOUDFLARE_DNS_API_TOKEN: $CLOUDFLARE_DNS_API_TOKEN
+      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL:?CLOUDFLARE_EMAIL not set}
+      CLOUDFLARE_DNS_API_TOKEN: ${CLOUDFLARE_DNS_API_TOKEN:?CLOUDFLARE_DNS_API_TOKEN not set}
+      TRAEFIK_API_INSECURE: "false"
+      TRAEFIK_PING: "true"
+      TRAEFIK_PROVIDERS_DOCKER_ENDPOINT: tcp://traefik-socket-proxy:2375
       # TRAEFIK_LOG_LEVEL: DEBUG
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
       - "/docker/traefik/conf/:/etc/traefik/conf/:ro"
       - "/docker/traefik/certs/:/etc/traefik/certs/"
       - "/docker/traefik/logs/:/var/log/traefik/"
     env_file:
       - stack.env
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      traefik-socket-proxy:
+        condition: service_healthy
     networks:
       - front-end
+      - socket-proxy
     dns:
       - 45.90.28.194
       - 45.90.30.194
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+  traefik-socket-proxy:
+    image: tecnativa/docker-socket-proxy:v0.5.0
+    container_name: traefik-socket-proxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      EVENTS: "1"
+      PING: "1"
+      VERSION: "1"
+      POST: "0"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2375/_ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - socket-proxy
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
+  socket-proxy:
+    internal: true

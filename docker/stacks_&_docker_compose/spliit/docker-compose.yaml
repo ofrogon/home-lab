@@ -7,16 +7,16 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD}@spliit-db
-      POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD}@spliit-db
-      PUID: $PUID
-      PGID: $PGID
+      POSTGRES_PRISMA_URL: postgresql://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}@spliit-db
+      POSTGRES_URL_NON_POOLING: postgresql://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}@spliit-db
+      PUID: ${PUID:?PUID not set}
+      PGID: ${PGID:?PGID not set}
     depends_on:
       spliit-db:
         condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - spliit-internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.spliit-http.entrypoints=web"
@@ -29,7 +29,7 @@ services:
       - "traefik.http.services.spliit-svc.loadBalancer.server.port=3000"
       - "traefik.docker.network=front-end"
       # External magic
-      - "traefik.http.routers.spliit-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.spliit-https-public.entrypoints=websecurepublic"
       - "traefik.http.routers.spliit-https-public.rule=Host(`${TOP_URL:-spliit}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.spliit-https-public.tls=true"
       - "traefik.http.routers.spliit-https-public.tls.certresolver=production"
@@ -37,14 +37,12 @@ services:
       - "diun.enable=true"
 
   spliit-db:
-    image: postgres:latest
+    image: postgres:${POSTGRES_VERSION:?POSTGRES_VERSION not set}-alpine
     container_name: spliit-db
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      PUID: $PUID
-      PGID: $PGID
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
     volumes:
       - "/docker/spliit/data:/var/lib/postgresql/data"
     healthcheck:
@@ -53,12 +51,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - back-end
+      - spliit-internal
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  spliit-internal:
+    internal: true

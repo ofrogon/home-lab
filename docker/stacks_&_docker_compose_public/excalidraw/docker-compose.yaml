@@ -2,21 +2,24 @@
 
 services:
   excalidraw:
-    image: excalidraw/excalidraw
+    # Upstream only publishes a current mutable latest tag.
+    image: excalidraw/excalidraw:latest
     container_name: excalidraw
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      PUID: $PUID
-      PGID: $PGID
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.excalidraw-http.entrypoints=web"
-      - "traefik.http.routers.excalidraw-http.rule=Host(`${TOP_URL:-draw}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
-      - "traefik.http.routers.excalidraw-https.entrypoints=websecure"
+      - "traefik.http.routers.excalidraw-https.entrypoints=websecurepublic"
       - "traefik.http.routers.excalidraw-https.rule=Host(`${TOP_URL:-draw}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.excalidraw-https.tls=true"
       - "traefik.http.routers.excalidraw-https.tls.certresolver=production"

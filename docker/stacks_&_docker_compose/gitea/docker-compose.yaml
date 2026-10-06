@@ -15,20 +15,21 @@ services:
       GITEA__database__HOST: "db:5432"
       GITEA__database__NAME: gitea
       GITEA__database__USER: gitea
-      GITEA__database__PASSWD: $DATABASE_PSSWD
+      GITEA__database__PASSWD: ${DATABASE_PSSWD:?DATABASE_PSSWD not set}
       GITEA__server__SSH_PORT: 2221
       GITEA__server__ROOT_URL: https://${TOP_URL:-gitea}.${BASE_URL:?BASE_URL not set}
       GITEA__server__LFS_START_SERVER: true
-      DISABLE_REGISTRATION: true
+      GITEA__service__DISABLE_REGISTRATION: true
     volumes:
       - "/docker/gitea/data:/data"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - gitea-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -48,17 +49,22 @@ services:
     environment:
       TZ: America/Montreal
       POSTGRES_USER: gitea
-      POSTGRES_PASSWORD: $DATABASE_PSSWD
+      POSTGRES_PASSWORD: ${DATABASE_PSSWD:?DATABASE_PSSWD not set}
       POSTGRES_DB: gitea
     volumes:
       - "/docker/gitea/db:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gitea -d gitea"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - back-end
+      - gitea-internal
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  gitea-internal:
+    internal: true

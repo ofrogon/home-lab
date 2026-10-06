@@ -76,7 +76,7 @@ services:
         condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - monkeytype-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -108,7 +108,7 @@ services:
       retries: 15
       start_period: 10s
     networks:
-      - back-end
+      - monkeytype-internal
 
   monkeytype-mongodb:
     image: mongo:5.0.13
@@ -128,7 +128,7 @@ services:
       retries: 15
       start_period: 10s
     networks:
-      - back-end
+      - monkeytype-internal
 
 volumes:
   mongo-data:
@@ -139,5 +139,5 @@ volumes:
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  monkeytype-internal:
+    internal: true

@@ -38,7 +38,7 @@ services:
       - "traefik.http.services.music-svc.loadBalancer.server.port=4533"
       - "traefik.docker.network=front-end"
       # External magic
-      - "traefik.http.routers.music-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.music-https-public.entrypoints=websecurepublic"
       - "traefik.http.routers.music-https-public.rule=Host(`${TOP_URL:-music}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.music-https-public.tls=true"
       - "traefik.http.routers.music-https-public.tls.certresolver=production"

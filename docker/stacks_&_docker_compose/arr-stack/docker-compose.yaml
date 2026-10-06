@@ -412,7 +412,7 @@ services:
       - "traefik.http.routers.seer-https.service=seer-svc"
       - "traefik.http.services.seer-svc.loadbalancer.server.port=5055"
       # External magic
-      - 'traefik.http.routers.seer-https-public.entrypoints=websecure-public'
+      - 'traefik.http.routers.seer-https-public.entrypoints=websecurepublic'
       - 'traefik.http.routers.seer-https-public.rule=Host(`jellyseerr.${PUBLIC_URL:?PUBLIC_URL not set}`)'
       - 'traefik.http.routers.seer-https-public.tls=true'
       - 'traefik.http.routers.seer-https-public.tls.certresolver=production'
@@ -455,4 +455,3 @@ services:
 networks:
   front-end:
     external: true
-

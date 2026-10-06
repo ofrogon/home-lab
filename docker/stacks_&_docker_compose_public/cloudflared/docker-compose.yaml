@@ -1,15 +1,22 @@
 ---
 services:
   tunnel:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:2026.10.0
     container_name: cloudflared-tunnel
     restart: always
-    command: tunnel run
+    command: tunnel --no-autoupdate run
     environment:
       TZ: America/Montreal
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?tunnel token required}
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?TUNNEL_TOKEN not set}
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
 

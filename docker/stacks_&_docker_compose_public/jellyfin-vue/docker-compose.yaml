@@ -7,8 +7,22 @@ services:
     restart: unless-stopped
     # ports:
     #   - 8080:80
+    environment:
+      TZ: America/Montreal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - front-end
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"

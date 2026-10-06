@@ -45,7 +45,7 @@ services:
         condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - vikunja-internal
     dns:
       - 192.168.99.7
       - 192.168.99.8
@@ -75,12 +75,12 @@ services:
       interval: 2s
       start_period: 30s
     networks:
-      - back-end
+      - vikunja-internal
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  vikunja-internal:
+    internal: true

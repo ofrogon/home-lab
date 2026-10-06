@@ -19,7 +19,7 @@ services:
       - docmostredis
     networks:
       - front-end
-      - back-end
+      - docmost-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -44,7 +44,7 @@ services:
     volumes:
       - /docker/docmost/db:/var/lib/postgresql/data
     networks:
-      - back-end
+      - docmost-internal
     labels:
       - "diun.enable=true"
 
@@ -56,12 +56,12 @@ services:
     volumes:
       - /docker/docmost/redis:/data
     networks:
-      - back-end
+      - docmost-internal
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  docmost-internal:
+    internal: true

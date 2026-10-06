@@ -18,9 +18,9 @@ global:
 
 # -- (Optional) Enable API and Dashboard here, don't do in production
 api:
-  dashboard: true
+  dashboard: false
   disableDashboardAd: true
-  insecure: true
+  insecure: false
 
 # -- Change EntryPoints here...
 entryPoints:
@@ -66,10 +66,6 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
 
-# -- (Optional) Disable TLS Cert verification check
-serversTransport:
-  insecureSkipVerify: true
-
 # -- (Optional) Overwrite Default Certificates
 # tls:
 #   stores:
@@ -87,7 +83,7 @@ providers:
     # -- (Optional) Enable this, if you want to expose all containers automatically
     exposedByDefault: false
   file:
-    directory: /etc/traefik
+    directory: /etc/traefik/conf
     watch: true
 
 log:

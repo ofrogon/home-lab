@@ -2,15 +2,18 @@
 services:
   registry:
     image: registry:latest
-    container_name: regsitry
+    container_name: registry
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      UID: $PUID
-      GID: $PGID
+      UID: ${PUID:?PUID not set}
+      GID: ${PGID:?PGID not set}
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
     volumes:
-      - "/docker/registry/registry.password:/auth/registry.password"
+      - "/docker/registry/registry.password:/auth/registry.password:ro"
       - "/docker/registry/data:/data"
     networks:
       - front-end

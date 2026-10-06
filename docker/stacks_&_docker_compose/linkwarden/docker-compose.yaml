@@ -6,12 +6,16 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
     volumes:
       - "/docker/linkwarden/pgdata:/var/lib/postgresql/data"
-    env_file:
-      - stack.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - linkwarden
+      - linkwarden-internal
     labels:
       - "diun.enable=true"
 
@@ -21,17 +25,19 @@ services:
     restart: unless-stopped
     environment:
       TZ: America/Montreal
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}@postgres:5432/postgres
     volumes:
       - "/docker/linkwarden/data:/data/data"
     env_file:
       - stack.env
     depends_on:
-      - postgres
-      - meilisearch
+      postgres:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
     networks:
       - front-end
-      - linkwarden
+      - linkwarden-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -50,16 +56,16 @@ services:
     restart: always
     environment:
       TZ: America/Montreal
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?MEILI_MASTER_KEY not set}
     volumes:
       - "/docker/linkwarden/meili_data:/meili_data"
-    env_file:
-      - stack.env
     networks:
-      - linkwarden
+      - linkwarden-internal
     labels:
       - "diun.enable=true"
 
 networks:
   front-end:
     external: true
-  linkwarden:
+  linkwarden-internal:
+    internal: true

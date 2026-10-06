@@ -5,16 +5,21 @@ services:
     restart: ${RESTART_POLICY}
     environment:
       # timezone inside container
-      - TZ
+      TZ: ${TZ:?TZ not set}
 
       # necessary Postgres options/variables
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER not set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB not set}
     volumes:
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - back-end
+      - mattermost-internal
     security_opt:
       - no-new-privileges:true
     pids_limit: 100
@@ -30,17 +35,17 @@ services:
     restart: ${RESTART_POLICY}
     environment:
       # timezone inside container
-      - TZ
+      TZ: ${TZ:?TZ not set}
 
       # necessary Mattermost options/variables (see env.example)
-      - MM_SQLSETTINGS_DRIVERNAME
-      - MM_SQLSETTINGS_DATASOURCE
+      MM_SQLSETTINGS_DRIVERNAME: ${MM_SQLSETTINGS_DRIVERNAME:?MM_SQLSETTINGS_DRIVERNAME not set}
+      MM_SQLSETTINGS_DATASOURCE: postgres://${POSTGRES_USER:?POSTGRES_USER not set}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}@postgres:5432/${POSTGRES_DB:?POSTGRES_DB not set}?sslmode=disable&connect_timeout=10
 
       # necessary for bleve
-      - MM_BLEVESETTINGS_INDEXDIR
+      MM_BLEVESETTINGS_INDEXDIR: ${MM_BLEVESETTINGS_INDEXDIR:?MM_BLEVESETTINGS_INDEXDIR not set}
 
       # additional settings
-      - MM_SERVICESETTINGS_SITEURL
+      MM_SERVICESETTINGS_SITEURL: https://${TOP_URL:-chat}.${BASE_URL:?BASE_URL not set}
     volumes:
       - ${MATTERMOST_CONFIG_PATH}:/mattermost/config:rw
       - ${MATTERMOST_DATA_PATH}:/mattermost/data:rw
@@ -49,10 +54,11 @@ services:
       - ${MATTERMOST_CLIENT_PLUGINS_PATH}:/mattermost/client/plugins:rw
       - ${MATTERMOST_BLEVE_INDEXES_PATH}:/mattermost/bleve-indexes:rw
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - mattermost-internal
     security_opt:
       - no-new-privileges:true
     pids_limit: 200
@@ -63,19 +69,17 @@ services:
       - "diun.enable=true"
       - "traefik.enable=true"
       - "traefik.http.routers.chat-http.entrypoints=web"
-      - "traefik.http.routers.chat-http.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.chat-http.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.chat-https.entrypoints=websecure"
-      - "traefik.http.routers.chat-https.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.chat-https.rule=Host(`${TOP_URL:-chat}.${BASE_URL:?BASE_URL not set}`)"
       - "traefik.http.routers.chat-https.tls=true"
       - "traefik.http.routers.chat-https.tls.certresolver=production"
       - "traefik.http.routers.chat-https.service=chat-svc"
-      - "traefik.http.services.chat-svc.loadBalancer.server.port=443"
+      - "traefik.http.services.chat-svc.loadBalancer.server.port=8065"
       - "traefik.docker.network=front-end"
 
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  mattermost-internal:
+    internal: true

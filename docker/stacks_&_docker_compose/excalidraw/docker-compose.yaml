@@ -23,7 +23,7 @@ services:
       - "traefik.http.services.excalidraw-svc.loadBalancer.server.port=80"
       - "traefik.docker.network=front-end"
       # External magic
-      - "traefik.http.routers.excalidraw-https-public.entrypoints=websecure-public"
+      - "traefik.http.routers.excalidraw-https-public.entrypoints=websecurepublic"
       - "traefik.http.routers.excalidraw-https-public.rule=Host(`${TOP_URL:-draw}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.excalidraw-https-public.tls=true"
       - "traefik.http.routers.excalidraw-https-public.tls.certresolver=production"
