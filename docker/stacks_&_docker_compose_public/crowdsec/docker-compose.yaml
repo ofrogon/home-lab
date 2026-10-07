@@ -22,7 +22,7 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - back-end
+      - crowdsec-internal
     security_opt:
       - no-new-privileges:true
     logging:
@@ -57,7 +57,7 @@ services:
         condition: service_healthy
     networks:
       - front-end
-      - back-end
+      - crowdsec-internal
     security_opt:
       - no-new-privileges:true
     logging:
@@ -70,5 +70,5 @@ services:
 networks:
   front-end:
     external: true
-  back-end:
-    external: true
+  crowdsec-internal:
+    internal: true
