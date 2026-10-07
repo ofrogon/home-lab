@@ -42,6 +42,7 @@ services:
       TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: "false"
       TRAEFIK_PROVIDERS_FILE_DIRECTORY: /etc/traefik/conf
       TRAEFIK_PROVIDERS_FILE_WATCH: "true"
+      TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY: "true"
       TRAEFIK_LOG_LEVEL: INFO
       TRAEFIK_LOG_FILEPATH: /var/log/traefik/traefik.log
       TRAEFIK_ACCESSLOG_FILEPATH: /var/log/traefik/access.log
