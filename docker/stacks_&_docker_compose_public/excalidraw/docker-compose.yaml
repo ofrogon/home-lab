@@ -19,7 +19,7 @@ services:
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.excalidraw-https.entrypoints=websecurepublic"
+      - "traefik.http.routers.excalidraw-https.entrypoints=websecure"
       - "traefik.http.routers.excalidraw-https.rule=Host(`${TOP_URL:-draw}.${PUBLIC_URL:?PUBLIC_URL not set}`)"
       - "traefik.http.routers.excalidraw-https.tls=true"
       - "traefik.http.routers.excalidraw-https.tls.certresolver=production"
