@@ -23,6 +23,7 @@ services:
       start_period: 30s
     networks:
       - crowdsec-internal
+      - crowdsec-egress
     security_opt:
       - no-new-privileges:true
     logging:
@@ -72,3 +73,4 @@ networks:
     external: true
   crowdsec-internal:
     internal: true
+  crowdsec-egress:
