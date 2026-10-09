@@ -41,11 +41,6 @@ services:
       # FIREWALL_OUTBOUND_SUBNETS: $FIREWALL_OUTBOUND_SUBNETS
     volumes:
       - "/docker/arr-stack/gluetun:/gluetun"
-    healthcheck:
-      test: ping -c 1 www.google.com || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
     networks:
       - front-end
     security_opt:

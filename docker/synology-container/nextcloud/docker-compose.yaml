@@ -1,0 +1,49 @@
+---
+
+name: nextcloud-aio
+
+services:
+  nextcloud-aio-mastercontainer:
+    image: ghcr.io/nextcloud-releases/all-in-one:latest
+    container_name: nextcloud-aio-mastercontainer
+    restart: always
+    init: true
+    ports:
+      # AIO management interface over HTTPS with a self-signed certificate.
+      - "${NAS_IP:-192.168.1.5}:9988:8080"
+    environment:
+      TZ: America/Montreal
+      # Existing production path. Do not change after AIO initialization.
+      NEXTCLOUD_DATADIR: /volume1/docker/NextCloud
+      APACHE_PORT: "11000"
+      # Traefik runs on another host, so Apache must listen on the NAS interface.
+      APACHE_IP_BINDING: ${NAS_IP:-192.168.1.5}
+      # Required by the Docker Engine currently shipped on this Synology NAS.
+      DOCKER_API_VERSION: "1.43"
+      # Required when the Synology kernel cannot provide Collabora's seccomp profile.
+      COLLABORA_SECCOMP_DISABLED: "true"
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nextcloud-aio
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /volume1/docker/NextCloud
+
+networks:
+  nextcloud-aio:
+    name: nextcloud-aio
+    external: true

@@ -1,0 +1,118 @@
+---
+
+name: immich
+
+services:
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    container_name: immich_server
+    restart: always
+    # Uncomment for hardware acceleration. See the Immich documentation.
+    # extends:
+    #   file: hwaccel.transcoding.yml
+    #   service: cpu
+    ports:
+      - "${NAS_IP:-192.168.1.5}:2283:2283"
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - ${UPLOAD_LOCATION:?UPLOAD_LOCATION not set}:/data
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    healthcheck:
+      disable: false
+    depends_on:
+      redis:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+    networks:
+      - immich-network
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    container_name: immich_machine_learning
+    restart: always
+    # Uncomment for hardware acceleration. See the Immich documentation.
+    # extends:
+    #   file: hwaccel.ml.yml
+    #   service: cpu
+    environment:
+      TZ: America/Montreal
+    volumes:
+      - model-cache:/cache
+    env_file:
+      - .env
+    healthcheck:
+      disable: false
+    networks:
+      - immich-network
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+  redis:
+    image: docker.io/valkey/valkey:9@sha256:c123e3715db63d06d4ad6964884037aa0d5d4d703939b9929954112889708e1d
+    container_name: immich_redis
+    restart: always
+    environment:
+      TZ: America/Montreal
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - immich-network
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+  database:
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
+    container_name: immich_postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      TZ: America/Montreal
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD not set}
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME not set}
+      POSTGRES_DB: ${DB_DATABASE_NAME:?DB_DATABASE_NAME not set}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      # Uncomment if the database is stored on HDDs.
+      # DB_STORAGE_TYPE: HDD
+    volumes:
+      - ${DB_DATA_LOCATION:?DB_DATA_LOCATION not set}:/var/lib/postgresql/data
+    healthcheck:
+      disable: false
+    networks:
+      - immich-network
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
+volumes:
+  model-cache:
+    name: immich-model-cache
+
+networks:
+  immich-network:
+    name: immich-network
+    external: true
