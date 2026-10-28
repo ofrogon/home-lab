@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - /docker/paperless/redisdata:/data
+    networks:
+      - paperless-internal
   db:
     image: docker.io/library/postgres:18
     restart: unless-stopped
@@ -16,7 +18,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
       TZ: America/Montreal
       PUID: $PUID
-      PGID: $PGID 
+      PGID: $PGID
+    networks:
+      - paperless-internal
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
@@ -40,6 +44,7 @@ services:
       USERMAP_GID: $PGID
     networks:
       - front-end
+      - paperless-internal
     labels:
       - "diun.enable=true"
       - "traefik.enable=true"
@@ -56,3 +61,5 @@ services:
 networks:
   front-end:
     external: true
+  paperless-internal:
+    internal: true
