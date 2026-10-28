@@ -42,6 +42,8 @@ services:
       PAPERLESS_DBPASS: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
       USERMAP_UID: $PUID
       USERMAP_GID: $PGID
+      PAPERLESS_URL= https://${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY not set}
     networks:
       - front-end
       - paperless-internal
