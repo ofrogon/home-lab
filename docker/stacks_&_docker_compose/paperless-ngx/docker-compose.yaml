@@ -35,7 +35,7 @@ services:
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
-      PAPERLESS_DBENGINE: postgresq
+      PAPERLESS_DBENGINE: postgresql
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID 
