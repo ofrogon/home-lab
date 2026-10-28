@@ -68,7 +68,7 @@ services:
       - "traefik.docker.network=front-end"
 
   meilisearch:
-    image: getmeili/meilisearch:1.13.3
+    image: getmeili/meilisearch:v1.13.3
     restart: always
     stop_grace_period: 60s
     environment:
