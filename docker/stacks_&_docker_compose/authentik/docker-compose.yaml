@@ -10,7 +10,7 @@ services:
       POSTGRES_DB: ${PG_DB:-authentik}
       TZ: America/Montreal
     volumes:
-      - "database:/var/lib/postgresql/data"
+      - "/docker/authentik/database:/var/lib/postgresql/data"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
@@ -166,8 +166,6 @@ services:
       - "diun.enable=true"
 
 volumes:
-  database:
-    driver: local
   redis:
     driver: local
 
