@@ -7,11 +7,12 @@ services:
       - /docker/paperless/redisdata:/data
     networks:
       - paperless-internal
+    labels:
+      - "diun.enable=true"
+
   db:
     image: docker.io/library/postgres:18
     restart: unless-stopped
-    volumes:
-      - /docker/paperless/pgdata:/var/lib/postgresql
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
@@ -19,45 +20,51 @@ services:
       TZ: America/Montreal
       PUID: $PUID
       PGID: $PGID
+    volumes:
+      - /docker/paperless/pgdata:/var/lib/postgresql
     networks:
       - paperless-internal
+    labels:
+      - "diun.enable=true"
+
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
-    depends_on:
-      - db
-      - broker
-    volumes:
-      - /docker/paperless/data:/usr/src/paperless/data
-      - /docker/paperless/media:/usr/src/paperless/media
-      - /docker/paperless/export:/usr/src/paperless/export
-      - /docker/paperless/consume:/usr/src/paperless/consume
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
       PAPERLESS_DBENGINE: postgresql
       TZ: America/Montreal
       PUID: $PUID
-      PGID: $PGID 
+      PGID: $PGID
       PAPERLESS_DBPASS: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
       USERMAP_UID: $PUID
       USERMAP_GID: $PGID
       PAPERLESS_URL: https://${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}
       PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY not set}
+    volumes:
+      - /docker/paperless/data:/usr/src/paperless/data
+      - /docker/paperless/media:/usr/src/paperless/media
+      - /docker/paperless/export:/usr/src/paperless/export
+      - /docker/paperless/consume:/usr/src/paperless/consume
+    depends_on:
+      - db
+      - broker
     networks:
       - front-end
       - paperless-internal
     labels:
       - "diun.enable=true"
+      # Frontend
       - "traefik.enable=true"
-      - "traefik.http.routers.paperless-http.entrypoints=web"
-      - "traefik.http.routers.paperless-http.rule=Host(`${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}`)"
-      - "traefik.http.routers.paperless-https.entrypoints=websecure"
-      - "traefik.http.routers.paperless-https.rule=Host(`${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}`)"
-      - "traefik.http.routers.paperless-https.tls=true"
-      - "traefik.http.routers.paperless-https.tls.certresolver=production"
-      - "traefik.http.routers.paperless-https.service=paperless-svc"
-      - "traefik.http.services.paperless-svc.loadBalancer.server.port=8000"
+      - "traefik.http.routers.paperless-fe-http.entrypoints=web"
+      - "traefik.http.routers.paperless-fe-http.rule=Host(`${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.paperless-fe-https.entrypoints=websecure"
+      - "traefik.http.routers.paperless-fe-https.rule=Host(`${TOP_URL:-paperless}.${BASE_URL:?BASE_URL not set}`)"
+      - "traefik.http.routers.paperless-fe-https.tls=true"
+      - "traefik.http.routers.paperless-fe-https.tls.certresolver=production"
+      - "traefik.http.routers.paperless-fe-https.service=paperless-fe-svc"
+      - "traefik.http.services.paperless-fe-svc.loadBalancer.server.port=8000"
       - "traefik.docker.network=front-end"
 
 networks:
