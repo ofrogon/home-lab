@@ -206,7 +206,7 @@ Traefik configuration remains host-managed. Do not add a repository-local Traefi
 `/docker/traefik/traefik.yaml` must define:
 
 - Entrypoints `web` on `:80`, `websecure` on `:443`, and `websecurepublic` on `:8443`.
-- The Docker provider with `exposedByDefault: false` and `endpoint: tcp://traefik-socket-proxy:2375`. Traefik must share `front-end` with routed containers and the internal `socket-proxy` network with its proxy.
+- The Docker provider with `exposedByDefault: false`; current operation uses `unix:///var/run/docker.sock` and Traefik must share `front-end` with routed containers.
 - The file provider watching `/docker/traefik/conf`.
 - Production and staging ACME resolvers using Cloudflare DNS challenge, persistent root-only `acme.json`, and valid notification email.
 - Access logs written under `/docker/traefik/logs` in the format/path consumed by CrowdSec, plus useful application logs.
@@ -228,22 +228,7 @@ curl -fsS http://TRAEFIK_INTERNAL_API/api/http/middlewares
 
 The API endpoint must be reachable only from an administrative network or container. Confirm all three entrypoints, expected routers/services, valid certificates, and the loaded `crowdsec-bouncer@file` middleware. Generate a controlled denied request or temporary test decision and confirm it is blocked and logged.
 
-### Docker Socket Proxy Deployment
-
-Before deploying the updated local Traefik Compose stack, update the existing Docker provider section in the host-managed `/docker/traefik/traefik.yaml`, preserving its other settings:
-
-```yaml
-providers:
-  docker:
-    endpoint: tcp://traefik-socket-proxy:2375
-    exposedByDefault: false
-```
-
-Deploy the Compose change together with this host-side change. The Traefik container no longer mounts the Docker socket. Only `traefik-socket-proxy` mounts it, on an internal network without published ports. The proxy allows container discovery, events, ping and version requests; `POST: "0"` restricts access to GET/HEAD. A read-only socket mount alone does not restrict Docker API operations.
-
-Do not try to override the host-managed static file using `TRAEFIK_PROVIDERS_DOCKER_ENDPOINT`: Traefik's file, environment and CLI static configuration methods are mutually exclusive. After deployment, confirm that the proxy is healthy, Docker discovery works, and existing routes still resolve.
-
-The public Traefik stack explicitly sets `TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY: "false"`. For HTTPS upstreams with private certificates, configure trusted root CAs and the correct server name in a dedicated host-managed `serversTransport`, then assign it to the relevant service. Verify these upstreams before deployment; do not disable verification globally.
+Future socket-proxy migration: deploy a read-only Docker socket proxy on an internal network, expose only the minimum Traefik API sections, and change the Docker provider endpoint from `unix:///var/run/docker.sock` to `tcp://docker-socket-proxy:2375`; then remove the socket mount. The current endpoint remains the direct Docker socket until that migration is separately tested.
 
 ## 6. BIND9 Installation
 
