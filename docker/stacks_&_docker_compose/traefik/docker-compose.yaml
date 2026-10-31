@@ -20,15 +20,20 @@ services:
       CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL:?CLOUDFLARE_EMAIL not set}
       CLOUDFLARE_DNS_API_TOKEN_FILE: /run/secrets/cloudflare_dns_api_token
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # Before deploying, set providers.docker.endpoint in the host-managed
+      # /docker/traefik/traefik.yaml to tcp://traefik-socket-proxy:2375.
       - "/docker/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
       - "/docker/traefik/conf/:/etc/traefik/conf/:ro"
       - "/docker/traefik/certs/:/etc/traefik/certs/"
       - "/docker/traefik/logs/:/var/log/traefik/"
     env_file:
       - stack.env
+    depends_on:
+      traefik-socket-proxy:
+        condition: service_healthy
     networks:
       - front-end
+      - socket-proxy
     security_opt:
       - no-new-privileges:true
     logging:
@@ -39,6 +44,37 @@ services:
     labels:
       - "diun.enable=true"
 
+  traefik-socket-proxy:
+    image: tecnativa/docker-socket-proxy:v0.5.0
+    container_name: traefik-socket-proxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      EVENTS: "1"
+      PING: "1"
+      VERSION: "1"
+      POST: "0"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2375/_ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - socket-proxy
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    labels:
+      - "diun.enable=true"
+
 networks:
   front-end:
     external: true
+  socket-proxy:
+    internal: true
