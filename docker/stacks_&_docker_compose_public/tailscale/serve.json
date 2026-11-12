@@ -1,0 +1,6 @@
+{
+  "TCP": {
+    "80": { "TCPForward": "traefik:80" },
+    "443": { "TCPForward": "traefik:443" }
+  }
+}
