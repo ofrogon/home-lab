@@ -5,16 +5,11 @@ services:
     container_name: tailscale
     hostname: ${TS_HOSTNAME:-home-lab}
     restart: unless-stopped
-    cap_add:
-      - net_admin
-      - net_raw
-    devices:
-      - /dev/net/tun:/dev/net/tun
     environment:
       TZ: America/Montreal
       TS_AUTHKEY: ${TS_AUTHKEY:?TS_AUTHKEY not set}
       TS_STATE_DIR: /var/lib/tailscale
-      TS_USERSPACE: false
+      TS_USERSPACE: true
       TS_SERVE_CONFIG: /config/serve.json
       TS_EXTRA_ARGS: ${TS_EXTRA_ARGS:-}
     volumes:
