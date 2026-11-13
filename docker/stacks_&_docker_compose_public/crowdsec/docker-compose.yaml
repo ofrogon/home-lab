@@ -34,7 +34,7 @@ services:
       - "diun.enable=true"
 
   bouncer-traefik:
-    image: samuelba/traefik_crowdsec_bouncer:v0.3.0
+    image: samuelba/traefik_crowdsec_bouncer:v0.3.1
     container_name: bouncer-traefik
     restart: unless-stopped
     environment:
